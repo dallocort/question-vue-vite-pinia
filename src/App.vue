@@ -1,3 +1,6 @@
+<script setup>
+</script>
+
 <template>
     <div class="area">
         <ul class="circles">
@@ -20,19 +23,9 @@
             </router-view>
         </section>
     </div>
-
 </template>
 
-<script>
-
-export default {
-    name: 'App'
-};
-</script>
-
 <style>
-@import url('https://fonts.googleapis.com/css?family=Exo:400,700');
-
 body {
     margin: 0;
     padding: 0;

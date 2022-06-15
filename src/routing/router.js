@@ -1,20 +1,12 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import Admin from "../pages/Admin.vue";
-import Choice from '../pages/Choice.vue';
-import GameOver from "../pages/GameOver.vue";
-import Level from "../pages/Level.vue";
-import Login from "../pages/Login.vue";
-import Main from "../pages/Main.vue";
-import Register from "../pages/Register.vue";
-import Welcome from '../pages/Welcome';
-import store from '../store';
+import {useStore} from "../store/store.js";
 
 const router = createRouter({
 	history: createWebHistory(),
 	routes: [{
 		name: 'welcome',
 		path: '/',
-		component: Welcome,
+		component: () => import('../pages/Welcome'),
 		beforeEnter(to, from, next) {
 			if (sessionStorage.getItem('username') && sessionStorage.getItem('sid')) {
 				next('/main');
@@ -25,7 +17,7 @@ const router = createRouter({
 	}, {
 		name: 'choice',
 		path: '/choice',
-		component: Choice,
+		component: () => import('../pages/Choice.vue'),
 		beforeEnter(to, from, next) {
 			if (sessionStorage.getItem('username') && sessionStorage.getItem('sid')) {
 				next('/main');
@@ -40,26 +32,27 @@ const router = createRouter({
 		children: [{
 			name: 'login',
 			path: 'login',
-			component: Login
+			component: () => import('../pages/Login.vue')
 		}, {
 			name: 'register',
 			path: 'register',
-			component: Register
+			component: () => import('../pages/Register.vue')
 		}]
 	}, {
 		name: 'main',
 		path: '/main',
-		component: Main
+		component: () => import('../pages/Main.vue')
 	}, {
 		name: 'level',
 		path: '/level',
-		component: Level
+		component: () => import('../pages/Level.vue')
 	}, {
 		name: 'admin',
 		path: '/admin',
-		component: Admin,
+		component: () => import('../pages/Admin.vue'),
 		beforeEnter(to, from, next) {
-			if (sessionStorage.getItem('username') && sessionStorage.getItem('sid') && store.getters.isAdmin) {
+			const store = useStore();
+			if (sessionStorage.getItem('username') && sessionStorage.getItem('sid') && store.isAdmin) {
 				next();
 			} else {
 				next('/main');
@@ -68,9 +61,10 @@ const router = createRouter({
 	}, {
 		name: 'game-over',
 		path: '/game-over',
-		component: GameOver,
+		component: () => import('../pages/GameOver.vue'),
 		beforeEnter(to, from, next) {
-			if (store.getters.isGameOver) {
+			const store = useStore();
+			if (store.isGameOver) {
 				next();
 			} else {
 				next('/main');

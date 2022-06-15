@@ -1,47 +1,22 @@
-import {createStore} from "vuex";
+import {defineStore} from "pinia";
 
-const store = createStore({
-	state() {
-		return {
-			isGameOver: false,
-			isAdmin: false
-		};
-	},
-	mutations: {
-		setGameIsOver(state) {
-			state.isGameOver = true;
-		},
-		setGameNotOver(state) {
-			state.isGameOver = false;
-		},
-		setIsAdmin(state) {
-			state.isAdmin = true;
-		},
-		setNotAdmin(state) {
-			state.isAdmin = false;
-		}
-	},
+export const useStore = defineStore('question', {
+	state: () => ({
+		isGameOver: false,
+		isAdmin: false
+	}),
 	actions: {
-		setGameIsOver(context) {
-			context.commit('setGameIsOver');
+		setGameIsOver() {
+			this.isGameOver = true;
 		},
-		setGameNotOver(context) {
-			context.commit('setGameNotOver');
+		setGameNotOver() {
+			this.isGameOver = false;
 		},
-		setIsAdmin(context) {
-			context.commit('setIsAdmin');
+		setIsAdmin() {
+			this.isAdmin = true;
 		},
-		setNotAdmin(context) {
-			context.commit('setNotAdmin');
-		}
-	},
-	getters: {
-		isGameOver(state) {
-			return state.isGameOver;
-		},
-		isAdmin(state) {
-			return state.isAdmin;
+		setNotAdmin() {
+			this.isAdmin = false;
 		}
 	}
 });
-export default store;
