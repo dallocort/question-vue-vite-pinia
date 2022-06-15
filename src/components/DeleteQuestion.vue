@@ -1,3 +1,53 @@
+<script setup>
+import axios from "axios";
+import {computed, onMounted} from "vue";
+
+let questions = [];
+let info = '';
+let searchText = '';
+
+function createAllQuestions() {
+    const request = axios.get(
+        `http://739k121.mars-e1.mars-hosting.com/dm_quiz/questions?sid=${sessionStorage.getItem(
+            'sid')}&level=all`);
+    request.then(response => {
+        if (response.data.status === 'E') {
+            throw new Error(response.data.message);
+        } else if (response.data.status === 'S') {
+            questions = response.data.data;
+            console.log(questions);
+        }
+    }).catch(message => info = message);
+}
+
+function deleteQuestion(id) {
+    const request = axios.delete(
+        `http://739k121.mars-e1.mars-hosting.com/inkvizicija/unosPitanja.js?id=${id}`);
+    request.then(response => {
+        console.log(response);
+        if (response.status !== 200) {
+            throw new Error(response.data.message);
+        } else if (response.status === 200) {
+            info = 'Question deleted successfully!!';
+            setTimeout(() => info = '', 3000);
+            createAllQuestions();
+        }
+    }).catch(message => info = message);
+}
+
+const filteredQuestions = computed(() => {
+    if (searchText.length > 2) {
+        return questions.filter(qst => qst.question.toLowerCase()
+        .includes(searchText.toLowerCase()));
+    } else {
+        return questions;
+    }
+});
+onMounted(() => {
+    createAllQuestions();
+});
+</script>
+
 <template>
     <section id="deleteQuestion">
         <label for="one">SEARCH:</label>
@@ -13,63 +63,6 @@
         <p v-if="info" class="info">{{ info }}</p>
     </section>
 </template>
-
-<script>
-import axios from "axios";
-
-export default {
-    name: "DeleteQuestion",
-    data() {
-        return {
-            questions: [],
-            info: '',
-            searchText: ''
-        };
-    },
-    methods: {
-        createAllQuestions() {
-            const request = axios.get(
-                `http://739k121.mars-e1.mars-hosting.com/dm_quiz/questions?sid=${sessionStorage.getItem(
-                    'sid')}&level=all`);
-            request.then(response => {
-                if (response.data.status === 'E') {
-                    throw new Error(response.data.message);
-                } else if (response.data.status === 'S') {
-                    this.questions = response.data.data;
-                    console.log(this.questions);
-                }
-            }).catch(message => this.info = message);
-        },
-        deleteQuestion(id) {
-            const request = axios.delete(
-                `http://739k121.mars-e1.mars-hosting.com/inkvizicija/unosPitanja.js?id=${id}`);
-            request.then(response => {
-                console.log(response);
-                if (response.status !== 200) {
-                    throw new Error(response.data.message);
-                } else if (response.status === 200) {
-                    this.info = 'Question deleted successfully!!';
-                    setTimeout(() => this.info = '', 3000);
-                    this.createAllQuestions();
-                }
-            }).catch(message => this.info = message);
-        }
-    },
-    computed: {
-        filteredQuestions() {
-            if (this.searchText.length > 2) {
-                return this.questions.filter(qst => qst.question.toLowerCase()
-                .includes(this.searchText.toLowerCase()));
-            } else {
-                return this.questions;
-            }
-        }
-    },
-    mounted() {
-        this.createAllQuestions();
-    }
-};
-</script>
 
 <style scoped>
 #deleteQuestion {

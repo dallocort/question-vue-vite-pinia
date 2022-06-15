@@ -1,3 +1,75 @@
+<script setup>
+import axios from "axios";
+import {onMounted} from "vue";
+import {onBeforeRouteLeave, useRoute, useRouter} from "vue-router";
+import {useStore} from "../store/store.js";
+
+const route = useRoute();
+const router = useRouter();
+const store = useStore();
+let scoreUpdate = '';
+let status = route.query.status;
+let score = route.query.score;
+
+function drag(e) {
+    const doc = document.getElementById('modal');
+    this.startElX = doc.offsetLeft;
+    this.startElY = doc.offsetTop;
+    this.startMouseX = e.clientX;
+    this.startMouseY = e.clientY;
+    doc.style.position = 'absolute';
+    doc.style.margin = '0';
+    doc.style.left = this.startElX + 'px';
+    doc.style.top = this.startElY + 'px';
+    this.moving = true;
+}
+
+function dragging(e) {
+    const doc = document.getElementById('modal');
+    if (this.moving) {
+        let movedMouseX = this.startMouseX - e.clientX;
+        let movedMouseY = this.startMouseY - e.clientY;
+        doc.style.left = this.startElX - movedMouseX + "px";
+        doc.style.top = this.startElY - movedMouseY + "px";
+        this.startElX = doc.offsetLeft;
+        this.startElY = doc.offsetTop;
+        this.startMouseX = e.clientX;
+        this.startMouseY = e.clientY;
+    }
+}
+
+function drop() {
+    this.moving = false;
+}
+
+function goToMain() {
+    router.push({name: 'main'});
+}
+
+onMounted(() => {
+    if (Number.isInteger(Number(route.query.score))) {
+        const request = axios.put(
+            'http://739k121.mars-e1.mars-hosting.com/dm_quiz/score', {
+                sid: sessionStorage.getItem('sid'),
+                score: Number(route.query.score)
+            });
+        request.then(response => {
+            if (response.data.status === 'E') {
+                throw new Error(response.data.message);
+            } else if (response.data.status === 'S') {
+                scoreUpdate = 'Score updated successfully!!';
+            }
+        })
+        .catch(message => scoreUpdate = message + ' - Score not updated!!');
+    }
+    console.log('GAME OVER:', store.isGameOver);
+});
+onBeforeRouteLeave(() => {
+    store.setGameNotOver();
+    console.log('GAME OVER:', store.isGameOver);
+});
+</script>
+
 <template>
     <div id="gameOver"
          @mouseleave="drop"
@@ -16,82 +88,6 @@
         </section>
     </div>
 </template>
-
-<script>
-import axios from "axios";
-import {mapActions, mapGetters} from "vuex";
-
-export default {
-    name: "GameOver",
-    data() {
-        return {
-            scoreUpdate: '',
-            status: this.$route.query.status,
-            score: this.$route.query.score
-        };
-    },
-    methods: {
-        ...mapActions(['setGameNotOver']),
-        drag(e) {
-            const doc = document.getElementById('modal');
-            this.startElX = doc.offsetLeft;
-            this.startElY = doc.offsetTop;
-            this.startMouseX = e.clientX;
-            this.startMouseY = e.clientY;
-            doc.style.position = 'absolute';
-            doc.style.margin = '0';
-            doc.style.left = this.startElX + 'px';
-            doc.style.top = this.startElY + 'px';
-            this.moving = true;
-        },
-        dragging(e) {
-            const doc = document.getElementById('modal');
-            if (this.moving) {
-                let movedMouseX = this.startMouseX - e.clientX;
-                let movedMouseY = this.startMouseY - e.clientY;
-                doc.style.left = this.startElX - movedMouseX + "px";
-                doc.style.top = this.startElY - movedMouseY + "px";
-                this.startElX = doc.offsetLeft;
-                this.startElY = doc.offsetTop;
-                this.startMouseX = e.clientX;
-                this.startMouseY = e.clientY;
-            }
-        },
-        drop() {
-            this.moving = false;
-        },
-        goToMain() {
-            this.$router.push({name: 'main'});
-        }
-    },
-    computed: {
-        ...mapGetters(['isGameOver'])
-    },
-    mounted() {
-        if (Number.isInteger(Number(this.$route.query.score))) {
-            const request = axios.put(
-                'http://739k121.mars-e1.mars-hosting.com/dm_quiz/score', {
-                    sid: sessionStorage.getItem('sid'),
-                    score: Number(this.$route.query.score)
-                });
-            request.then(response => {
-                if (response.data.status === 'E') {
-                    throw new Error(response.data.message);
-                } else if (response.data.status === 'S') {
-                    this.scoreUpdate = 'Score updated successfully!!';
-                }
-            })
-            .catch(
-                message => this.scoreUpdate = message + ' - Score not updated!!');
-        }
-        console.log('GAME OVER:', this.isGameOver);
-    },
-    beforeRouteLeave() {
-        this.setGameNotOver();
-        console.log('GAME OVER:', this.isGameOver);
-    }
-};
-</script>
 
 <style scoped>
 #gameOver {

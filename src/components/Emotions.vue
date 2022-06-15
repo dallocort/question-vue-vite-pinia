@@ -1,3 +1,16 @@
+<script setup>
+import {defineProps, onMounted} from "vue";
+
+const props = defineProps({
+    emotion: {
+        type: String,
+        default: 'normal'
+    }
+});
+let blink = false;
+onMounted(() => setInterval(() => blink = !this.blink, 5000));
+</script>
+
 <template>
     <section :class="[emotion, {blink:blink}]">
         <div class="smiley">
@@ -9,26 +22,6 @@
         </div>
     </section>
 </template>
-
-<script>
-export default {
-    name: "Emotions",
-    props: {
-        emotion: {
-            type: String,
-            default: 'normal'
-        }
-    },
-    data() {
-        return {
-            blink: false
-        };
-    },
-    mounted() {
-        setInterval(() => this.blink = !this.blink, 5000);
-    }
-};
-</script>
 
 <style scoped>
 body, html {

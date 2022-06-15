@@ -1,3 +1,13 @@
+<script setup>
+import {computed} from "vue";
+import {useRoute} from 'vue-router';
+
+const route = useRoute();
+let session = sessionStorage.getItem('username');
+const choiceLink = computed(
+    () => route.name === 'login' ? 'register' : 'login');
+</script>
+
 <template>
     <section id="choice">
         <router-view v-slot="{Component}">
@@ -6,37 +16,14 @@
                     <component :is="Component"></component>
                 </keep-alive>
             </transition>
-
         </router-view>
-
         <div class="choice">
             <router-link :to="choiceLink">
                 {{ choiceLink.name }}
             </router-link>
         </div>
-
     </section>
 </template>
-
-<script>
-export default {
-    name: "Choice",
-    data() {
-        return {
-            session: sessionStorage.getItem('username')
-        };
-    },
-    methods: {},
-    computed: {
-        choiceLink() {
-            return {
-                name: this.$route.name === 'login' ? 'register' : 'login'
-            };
-        }
-    }
-};
-
-</script>
 
 <style scoped>
 #choice {

@@ -1,3 +1,8 @@
+<script setup>
+let name = "Harts";
+const props = defineProps({numOfLives: String});
+</script>
+
 <template>
     <section id="harts">
         <template v-for="num in numOfLives" :key="num">
@@ -15,16 +20,6 @@
 
     </section>
 </template>
-
-<script>
-export default {
-    name: "Harts",
-    props: ['numOfLives'],
-    data() {
-        return {};
-    }
-};
-</script>
 
 <style scoped>
 #harts {
