@@ -1,5 +1,5 @@
-import Admin from "@/pages/Admin.vue";
 import {createRouter, createWebHistory} from 'vue-router';
+import Admin from "../pages/Admin.vue";
 import Choice from '../pages/Choice.vue';
 import GameOver from "../pages/GameOver.vue";
 import Level from "../pages/Level.vue";
