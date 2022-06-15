@@ -1,37 +1,42 @@
 <script setup>
 import axios from "axios";
-import {onMounted} from "vue";
+import {onMounted, ref} from "vue";
+import {useRouter} from "vue-router";
+import {useStore} from "../store/store.js";
 
+const store = useStore();
+const router = useRouter();
 let user = sessionStorage.getItem('username');
-let highScores = '';
-let error = '';
+let highScores = ref('');
+let error = ref('');
 
 function exitGame() {
     sessionStorage.clear();
-    this.setNotAdmin();
-    this.$router.push({name: 'welcome'});
+    store.setNotAdmin();
+    router.push({name: 'welcome'});
 }
 
 function goToLevel() {
-    this.$router.push({name: 'level'});
+    router.push({name: 'level'});
 }
 
 function adminPage() {
-    this.$router.push({name: 'admin'});
+    router.push({name: 'admin'});
 }
 
 onMounted(() => {
     const request = axios.get(
-        `http://739k121.mars-e1.mars-hosting.com/dm_quiz/highscores?sid=${sessionStorage.getItem(
+        `http://739k121.mars-e1.mars-hosting.com/dm_quiz/highScores.value?sid=${sessionStorage.getItem(
             'sid')}`);
     request.then(response => {
-        if (response.data.status === 'E') {
+        console.log(response);
+        if (response?.data?.status === 'E') {
             throw new Error(response.data.message);
-        } else if (response.data.status === 'S') {
-            this.highScores = response.data.data.sort(
+        } else if (response?.data?.status === 'S') {
+            highScores.value = response.data.data.sort(
                 (a, b) => b.usr_points - a.usr_points);
         }
-    }).catch(message => this.error = message);
+    }).catch(message => error.value = message);
 });
 </script>
 
@@ -44,7 +49,7 @@ onMounted(() => {
         <button @click="exitGame">
             EXIT GAME
         </button>
-        <button v-if="isAdmin" @click="adminPage">
+        <button v-if="store.isAdmin" @click="adminPage">
             ADMIN
         </button>
         <p v-if="error" style="color:red">{{ error }}</p>
@@ -84,7 +89,7 @@ onMounted(() => {
     font-size: 1.2em;
 }
 
-#highScores p {
+#highScores.value p {
     margin: 0;
     padding: 0 5px 0;
     width: 30%;
@@ -93,7 +98,7 @@ onMounted(() => {
     overflow: hidden;
 }
 
-#highScores {
+#highScores.value {
     width: 95%;
     margin: 35px auto 0;
     display: flex;

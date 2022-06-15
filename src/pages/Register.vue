@@ -1,49 +1,50 @@
 <script setup>
 import axios from "axios";
-import {onMounted} from "vue";
-import {onBeforeRouteLeave} from "vue-router";
+import {onMounted, ref} from "vue";
+import {onBeforeRouteLeave, useRouter} from "vue-router";
 
-let error = '';
-let username = "";
-let password = "";
-let buttonDisabled = false;
+const router = useRouter();
+let error = ref('');
+let username = ref("");
+let password = ref("");
+let buttonDisabled = ref(false);
 
 function register() {
-    this.buttonDisabled = true;
-    if (this.validate()) {
+    buttonDisabled.value = true;
+    if (validate()) {
         const request = axios.post(
             'http://739k121.mars-e1.mars-hosting.com/dm_quiz/register', {
-                "username": this.username,
-                "password": this.password
+                "username": username.value,
+                "password": password.value
             });
         request.then(response => {
             if (response.data.status === 'E') {
                 throw new Error(response.data.message);
             } else if (response.data.status === 'S') {
-                this.$router.push({name: 'login'});
+                router.push({name: 'login'});
             }
         }).catch(message => {
-            this.buttonDisabled = false;
-            this.error = message;
+            buttonDisabled.value = false;
+            error.value = message;
         });
     }
 }
 
 function validate() {
-    this.error = '';
-    if (this.username && this.password && this.username.includes(
-        ' ') === false && this.password.includes(' ') === false) {
+    error.value = '';
+    if (username.value && password.value && username.value.includes(
+        ' ') === false && password.value.includes(' ') === false) {
         return true;
     } else {
-        this.error = 'enter correct data';
-        this.buttonDisabled = false;
+        error.value = 'enter correct data';
+        buttonDisabled.value = false;
         return false;
     }
 }
 
 onBeforeRouteLeave(() => {
     console.log('register leave');
-    this.buttonDisabled = false;
+    buttonDisabled = false;
 });
 onMounted(() => {
     console.log('REGISTER M');

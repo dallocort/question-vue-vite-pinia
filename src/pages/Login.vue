@@ -1,19 +1,22 @@
 <script setup>
 import axios from "axios";
+import {ref} from "vue";
 import {useRouter} from "vue-router";
+import {useStore} from "../store/store.js";
 
+const store = useStore();
 const router = useRouter();
-let error = '';
-let username = "";
-let password = "";
-let buttonDisabled = false;
+let error = ref('');
+let username = ref("");
+let password = ref("");
+let buttonDisabled = ref(false);
 
 function login() {
-    buttonDisabled = true;
+    buttonDisabled.value = true;
     const request = axios.post(
         'http://739k121.mars-e1.mars-hosting.com/dm_quiz/login', {
-            "username": username,
-            "password": password
+            "username": username.value,
+            "password": password.value
         });
     request.then(response => {
         if (response.data.status === 'E') {
@@ -23,13 +26,13 @@ function login() {
             sessionStorage.setItem('sid', response.data.sid);
             sessionStorage.setItem('username', response.data.username);
             if (response.data.access === 1) {
-                this.setIsAdmin();
+                store.setIsAdmin();
             }
             router.push({name: 'main'});
         }
     }).catch(message => {
-        this.buttonDisabled = false;
-        this.error = message;
+        buttonDisabled.value = false;
+        error.value = message;
     });
 }
 </script>

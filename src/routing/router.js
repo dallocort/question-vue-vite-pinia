@@ -1,93 +1,114 @@
-import {createRouter, createWebHistory} from 'vue-router';
-import {useStore} from "../store/store.js";
+import { createRouter, createWebHistory } from "vue-router";
+import { useStore } from "../store/store.js";
 
 const router = createRouter({
-	history: createWebHistory(),
-	routes: [{
-		name: 'welcome',
-		path: '/',
-		component: () => import('../pages/Welcome'),
-		beforeEnter(to, from, next) {
-			if (sessionStorage.getItem('username') && sessionStorage.getItem('sid')) {
-				next('/main');
-			} else {
-				next();
-			}
-		}
-	}, {
-		name: 'choice',
-		path: '/choice',
-		component: () => import('../pages/Choice.vue'),
-		beforeEnter(to, from, next) {
-			if (sessionStorage.getItem('username') && sessionStorage.getItem('sid')) {
-				next('/main');
-			} else {
-				if (to.path === '/choice/login') {
-					next();
-				} else {
-					next('/choice/login');
-				}
-			}
-		},
-		children: [{
-			name: 'login',
-			path: 'login',
-			component: () => import('../pages/Login.vue')
-		}, {
-			name: 'register',
-			path: 'register',
-			component: () => import('../pages/Register.vue')
-		}]
-	}, {
-		name: 'main',
-		path: '/main',
-		component: () => import('../pages/Main.vue')
-	}, {
-		name: 'level',
-		path: '/level',
-		component: () => import('../pages/Level.vue')
-	}, {
-		name: 'admin',
-		path: '/admin',
-		component: () => import('../pages/Admin.vue'),
-		beforeEnter(to, from, next) {
-			const store = useStore();
-			if (sessionStorage.getItem('username') && sessionStorage.getItem('sid') && store.isAdmin) {
-				next();
-			} else {
-				next('/main');
-			}
-		}
-	}, {
-		name: 'game-over',
-		path: '/game-over',
-		component: () => import('../pages/GameOver.vue'),
-		beforeEnter(to, from, next) {
-			const store = useStore();
-			if (store.isGameOver) {
-				next();
-			} else {
-				next('/main');
-			}
-		}
-	}, {
-		path: '/:anything(.*)',
-		redirect: '/'
-	}]
+  history: createWebHistory(),
+  routes: [
+    {
+      name: "welcome",
+      path: "/",
+      component: () => import("../pages/Welcome.vue"),
+      beforeEnter(_to, _from, next) {
+        if (
+          sessionStorage.getItem("username") &&
+          sessionStorage.getItem("sid")
+        ) {
+          next("/main");
+        } else {
+          next();
+        }
+      },
+    },
+    {
+      name: "choice",
+      path: "/choice",
+      component: () => import("../pages/Choice.vue"),
+      beforeEnter(to, _from, next) {
+        if (
+          sessionStorage.getItem("username") &&
+          sessionStorage.getItem("sid")
+        ) {
+          next("/main");
+        } else {
+          if (to.path === "/choice/login") {
+            next();
+          } else {
+            next("/choice/login");
+          }
+        }
+      },
+      children: [
+        {
+          name: "login",
+          path: "login",
+          component: () => import("../pages/Login.vue"),
+        },
+        {
+          name: "register",
+          path: "register",
+          component: () => import("../pages/Register.vue"),
+        },
+      ],
+    },
+    {
+      name: "main",
+      path: "/main",
+      component: () => import("../pages/Main.vue"),
+    },
+    {
+      name: "level",
+      path: "/level",
+      component: () => import("../pages/Level.vue"),
+    },
+    {
+      name: "admin",
+      path: "/admin",
+      component: () => import("../pages/Admin.vue"),
+      beforeEnter(_to, _from, next) {
+        const store = useStore();
+        if (
+          sessionStorage.getItem("username") &&
+          sessionStorage.getItem("sid") &&
+          store.isAdmin
+        ) {
+          next();
+        } else {
+          next("/main");
+        }
+      },
+    },
+    {
+      name: "game-over",
+      path: "/game-over",
+      component: () => import("../pages/GameOver.vue"),
+      beforeEnter(_to, _from, next) {
+        const store = useStore();
+        if (store.isGameOver) {
+          next();
+        } else {
+          next("/main");
+        }
+      },
+    },
+    {
+      path: "/:anything(.*)",
+      redirect: "/",
+    },
+  ],
 });
-router.beforeEach((to, from, next) => {
-	if (to.path.startsWith('/choice')) {
-		next();
-		return;
-	}
-	if (sessionStorage.getItem('username') && sessionStorage.getItem('sid')) {
-		next();
-	} else {
-		if (to.path === '/') {
-			next();
-		} else {
-			next('/');
-		}
-	}
+router.beforeEach((to, _from, next) => {
+  if (to.path.startsWith("/choice")) {
+    next();
+    return;
+  }
+  if (sessionStorage.getItem("username") && sessionStorage.getItem("sid")) {
+    next();
+  } else {
+    if (to.path === "/") {
+      next();
+    } else {
+      next("/");
+    }
+  }
 });
 export default router;

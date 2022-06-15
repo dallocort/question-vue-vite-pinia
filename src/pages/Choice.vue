@@ -19,7 +19,7 @@ const choiceLink = computed(
         </router-view>
         <div class="choice">
             <router-link :to="choiceLink">
-                {{ choiceLink.name }}
+                {{ choiceLink }}
             </router-link>
         </div>
     </section>
