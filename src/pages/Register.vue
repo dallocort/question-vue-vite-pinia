@@ -1,3 +1,55 @@
+<script setup>
+import axios from "axios";
+import {onMounted} from "vue";
+import {onBeforeRouteLeave} from "vue-router";
+
+let error = '';
+let username = "";
+let password = "";
+let buttonDisabled = false;
+
+function register() {
+    this.buttonDisabled = true;
+    if (this.validate()) {
+        const request = axios.post(
+            'http://739k121.mars-e1.mars-hosting.com/dm_quiz/register', {
+                "username": this.username,
+                "password": this.password
+            });
+        request.then(response => {
+            if (response.data.status === 'E') {
+                throw new Error(response.data.message);
+            } else if (response.data.status === 'S') {
+                this.$router.push({name: 'login'});
+            }
+        }).catch(message => {
+            this.buttonDisabled = false;
+            this.error = message;
+        });
+    }
+}
+
+function validate() {
+    this.error = '';
+    if (this.username && this.password && this.username.includes(
+        ' ') === false && this.password.includes(' ') === false) {
+        return true;
+    } else {
+        this.error = 'enter correct data';
+        this.buttonDisabled = false;
+        return false;
+    }
+}
+
+onBeforeRouteLeave(() => {
+    console.log('register leave');
+    this.buttonDisabled = false;
+});
+onMounted(() => {
+    console.log('REGISTER M');
+});
+</script>
+
 <template>
     <section id="register" :class="{cursor:buttonDisabled}">
         <h1>Create new account:</h1>
@@ -23,63 +75,6 @@
         <router-link :to="{name:'main'}">MAIN MENU</router-link>
     </section>
 </template>
-
-<script>
-import axios from "axios";
-
-export default {
-    name: "Register",
-    data() {
-        return {
-            error: '',
-            username: "",
-            password: "",
-            buttonDisabled: false
-        };
-    },
-    methods: {
-        register() {
-            this.buttonDisabled = true;
-            if (this.validate()) {
-                const request = axios.post(
-                    'http://739k121.mars-e1.mars-hosting.com/dm_quiz/register',
-                    {
-                        "username": this.username,
-                        "password": this.password
-                    });
-                request.then(response => {
-                    if (response.data.status === 'E') {
-                        throw new Error(response.data.message);
-                    } else if (response.data.status === 'S') {
-                        this.$router.push({name: 'login'});
-                    }
-                }).catch(message => {
-                    this.buttonDisabled = false;
-                    this.error = message;
-                });
-            }
-        },
-        validate() {
-            this.error = '';
-            if (this.username && this.password && this.username.includes(
-                ' ') === false && this.password.includes(' ') === false) {
-                return true;
-            } else {
-                this.error = 'enter correct data';
-                this.buttonDisabled = false;
-                return false;
-            }
-        }
-    },
-    beforeRouteLeave() {
-        console.log('register leave');
-        this.buttonDisabled = false;
-    },
-    mounted() {
-        console.log('REGISTER M');
-    }
-};
-</script>
 
 <style scoped>
 #register {

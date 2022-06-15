@@ -1,3 +1,39 @@
+<script setup>
+import axios from "axios";
+import {useRouter} from "vue-router";
+
+const router = useRouter();
+let error = '';
+let username = "";
+let password = "";
+let buttonDisabled = false;
+
+function login() {
+    buttonDisabled = true;
+    const request = axios.post(
+        'http://739k121.mars-e1.mars-hosting.com/dm_quiz/login', {
+            "username": username,
+            "password": password
+        });
+    request.then(response => {
+        if (response.data.status === 'E') {
+            throw new Error(response.data.message);
+        } else if (response.data.status === 'S') {
+            console.log(response.data);
+            sessionStorage.setItem('sid', response.data.sid);
+            sessionStorage.setItem('username', response.data.username);
+            if (response.data.access === 1) {
+                this.setIsAdmin();
+            }
+            router.push({name: 'main'});
+        }
+    }).catch(message => {
+        this.buttonDisabled = false;
+        this.error = message;
+    });
+}
+</script>
+
 <template>
     <section id="login" :class="{cursor:buttonDisabled}">
         <h1>Enter your username and password:</h1>
@@ -22,50 +58,6 @@
         <router-link :to="{name:'main'}">MAIN MENU</router-link>
     </section>
 </template>
-
-<script>
-import axios from "axios";
-import {mapActions} from "vuex";
-
-export default {
-    name: "Login",
-    data() {
-        return {
-            error: '',
-            username: "",
-            password: "",
-            buttonDisabled: false
-        };
-    },
-    methods: {
-        ...mapActions(['setIsAdmin']),
-        login() {
-            this.buttonDisabled = true;
-            const request = axios.post(
-                'http://739k121.mars-e1.mars-hosting.com/dm_quiz/login', {
-                    "username": this.username,
-                    "password": this.password
-                });
-            request.then(response => {
-                if (response.data.status === 'E') {
-                    throw new Error(response.data.message);
-                } else if (response.data.status === 'S') {
-                    console.log(response.data);
-                    sessionStorage.setItem('sid', response.data.sid);
-                    sessionStorage.setItem('username', response.data.username);
-                    if (response.data.access === 1) {
-                        this.setIsAdmin();
-                    }
-                    this.$router.push({name: 'main'});
-                }
-            }).catch(message => {
-                this.buttonDisabled = false;
-                this.error = message;
-            });
-        }
-    }
-};
-</script>
 
 <style scoped>
 #login {

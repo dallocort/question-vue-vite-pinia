@@ -1,3 +1,62 @@
+<script setup>
+import axios from "axios";
+import {onBeforeRouteLeave} from "vue-router";
+
+let question = '';
+let correctAnswer = '';
+let answer2 = '';
+let answer3 = '';
+let answer4 = '';
+let qst_level = '1';
+let info = '';
+let buttonDisabled = false;
+
+function addQuestion() {
+    buttonDisabled = true;
+    if (question !== '' && correctAnswer !== '' && answer2 !== '' && answer3 !== '' && answer4 !== '' && (qst_level === 1 || qst_level === 2 || qst_level === '2' || qst_level === '1')) {
+        const request = axios.post(
+            'http://739k121.mars-e1.mars-hosting.com/inkvizicija/unosPitanja.js',
+            {
+                odgovor2: answer2,
+                odgovor3: answer3,
+                odgovor4: answer4,
+                qst_level: Number(qst_level),
+                question: question,
+                tacanOdgovor: correctAnswer
+            });
+        request.then(response => {
+            if (response.status !== 200) {
+                throw new Error(response.data.message);
+            } else {
+                info = 'Question added successfully!!';
+                reset();
+                buttonDisabled = false;
+            }
+        })
+        .catch(message => {
+            buttonDisabled = false;
+            info = message;
+        });
+    } else {
+        buttonDisabled = false;
+        info = 'error, enter data correctly';
+        setTimeout(() => info = '', 3000);
+    }
+}
+
+function reset() {
+    answer2 = '';
+    answer3 = '';
+    answer4 = '';
+    qst_level = '1';
+    question = '';
+    correctAnswer = '';
+    setTimeout(() => info = '', 3000);
+}
+
+onBeforeRouteLeave(() => buttonDisabled = false);
+</script>
+
 <template>
     <section id="newQuestion" :class="{cursor:buttonDisabled}">
         <h1>CREATE NEW QUESTION</h1>
@@ -32,72 +91,6 @@
         <p v-if="info" class="info">{{ info }}</p>
     </section>
 </template>
-
-<script>
-import axios from "axios";
-
-export default {
-    name: "NewQuestion",
-    data() {
-        return {
-            question: '',
-            correctAnswer: '',
-            answer2: '',
-            answer3: '',
-            answer4: '',
-            qst_level: '1',
-            info: '',
-            buttonDisabled: false
-        };
-    },
-    methods: {
-        addQuestion() {
-            this.buttonDisabled = true;
-            if (this.question !== '' && this.correctAnswer !== '' && this.answer2 !== '' && this.answer3 !== '' && this.answer4 !== '' && (this.qst_level === 1 || this.qst_level === 2 || this.qst_level === '2' || this.qst_level === '1')) {
-                const request = axios.post(
-                    'http://739k121.mars-e1.mars-hosting.com/inkvizicija/unosPitanja.js',
-                    {
-                        odgovor2: this.answer2,
-                        odgovor3: this.answer3,
-                        odgovor4: this.answer4,
-                        qst_level: Number(this.qst_level),
-                        question: this.question,
-                        tacanOdgovor: this.correctAnswer
-                    });
-                request.then(response => {
-                    if (response.status !== 200) {
-                        throw new Error(response.data.message);
-                    } else {
-                        this.info = 'Question added successfully!!';
-                        this.reset();
-                        this.buttonDisabled = false;
-                    }
-                })
-                .catch(message => {
-                    this.buttonDisabled = false;
-                    this.info = message;
-                });
-            } else {
-                this.buttonDisabled = false;
-                this.info = 'error, enter data correctly';
-                setTimeout(() => this.info = '', 3000);
-            }
-        },
-        reset() {
-            this.answer2 = '';
-            this.answer3 = '';
-            this.answer4 = '';
-            this.qst_level = '1';
-            this.question = '';
-            this.correctAnswer = '';
-            setTimeout(() => this.info = '', 3000);
-        }
-    },
-    beforeRouteLeave() {
-        this.buttonDisabled = false;
-    }
-};
-</script>
 
 <style scoped>
 label {

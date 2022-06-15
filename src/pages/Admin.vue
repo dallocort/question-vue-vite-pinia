@@ -1,36 +1,21 @@
+<script setup>
+import {ref} from "vue";
+
+let component = ref('NewQuestion');
+</script>
+
 <template>
     <section id="admin">
         <button :disabled="component==='NewQuestion'"
-                @click="component='NewQuestion'">Add
-                                                 Question
+                @click="component='NewQuestion'">Add Question
         </button>
         <button :disabled="component==='DeleteQuestion'"
                 @click="component='DeleteQuestion'">Delete Question
         </button>
         <component :is="component"></component>
-
         <router-link :to="{name:'main'}">MAIN MENU</router-link>
     </section>
 </template>
-
-<script>
-
-import DeleteQuestion from "@/components/DeleteQuestion.vue";
-import NewQuestion from "@/components/NewQuestion.vue";
-
-export default {
-    name: "Admin",
-    components: {
-        NewQuestion,
-        DeleteQuestion
-    },
-    data() {
-        return {
-            component: 'NewQuestion'
-        };
-    }
-};
-</script>
 
 <style scoped>
 #admin {
@@ -54,5 +39,4 @@ button {
     text-transform: uppercase;
     margin: 5px;
 }
-
 </style>

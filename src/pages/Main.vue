@@ -1,3 +1,40 @@
+<script setup>
+import axios from "axios";
+import {onMounted} from "vue";
+
+let user = sessionStorage.getItem('username');
+let highScores = '';
+let error = '';
+
+function exitGame() {
+    sessionStorage.clear();
+    this.setNotAdmin();
+    this.$router.push({name: 'welcome'});
+}
+
+function goToLevel() {
+    this.$router.push({name: 'level'});
+}
+
+function adminPage() {
+    this.$router.push({name: 'admin'});
+}
+
+onMounted(() => {
+    const request = axios.get(
+        `http://739k121.mars-e1.mars-hosting.com/dm_quiz/highscores?sid=${sessionStorage.getItem(
+            'sid')}`);
+    request.then(response => {
+        if (response.data.status === 'E') {
+            throw new Error(response.data.message);
+        } else if (response.data.status === 'S') {
+            this.highScores = response.data.data.sort(
+                (a, b) => b.usr_points - a.usr_points);
+        }
+    }).catch(message => this.error = message);
+});
+</script>
+
 <template>
     <section id="main">
         <h1>Welcome {{ user }}! </h1>
@@ -29,52 +66,6 @@
         </section>
     </section>
 </template>
-
-<script>
-import axios from "axios";
-import {mapActions, mapGetters} from "vuex";
-
-export default {
-    name: "Main",
-    data() {
-        return {
-            user: sessionStorage.getItem('username'),
-            highScores: '',
-            error: ''
-        };
-    },
-    methods: {
-        ...mapActions(['setNotAdmin']),
-        exitGame() {
-            sessionStorage.clear();
-            this.setNotAdmin();
-            this.$router.push({name: 'welcome'});
-        },
-        goToLevel() {
-            this.$router.push({name: 'level'});
-        },
-        adminPage() {
-            this.$router.push({name: 'admin'});
-        }
-    },
-    computed: {
-        ...mapGetters(['isAdmin'])
-    },
-    mounted() {
-        const request = axios.get(
-            `http://739k121.mars-e1.mars-hosting.com/dm_quiz/highscores?sid=${sessionStorage.getItem(
-                'sid')}`);
-        request.then(response => {
-            if (response.data.status === 'E') {
-                throw new Error(response.data.message);
-            } else if (response.data.status === 'S') {
-                this.highScores = response.data.data.sort(
-                    (a, b) => b.usr_points - a.usr_points);
-            }
-        }).catch(message => this.error = message);
-    }
-};
-</script>
 
 <style scoped>
 #main {

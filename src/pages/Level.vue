@@ -1,3 +1,242 @@
+<script setup>
+import axios from "axios";
+import {onMounted, ref, watch} from "vue";
+import {useRouter} from 'vue-router';
+import Emotions from "../components/Emotions.vue";
+import Harts from "../components/Harts.vue";
+import Timer from "../components/Timer.vue";
+import {useStore} from "../store/store.js";
+
+const router = useRouter();
+const store = useStore();
+let level = ref(1);
+let error = '';
+let indexOfQuestion = 0;
+let allQuestions = ref([]);
+let questions = [];
+let answers = [];
+let restartTimer = false;
+let stopTimer = false;
+let showTimeIsUp = false;
+let user = sessionStorage.getItem('username');
+let score = 0;
+let numOfLives = 3;
+let showQuestions = true;
+let answerWrong = '';
+let answerCorrect = '';
+let blocking = false;
+let seconds = 20;
+let correctAnswerArray = [];
+let emotion = 'normal';
+let questionsFetched = false;
+
+function createAllQuestions(lvl) {
+    const request = axios.get(
+        `http://739k121.mars-e1.mars-hosting.com/dm_quiz/questions?sid=${sessionStorage.getItem(
+            'sid')}&level=${lvl}`);
+    request.then(response => {
+        if (response.data.status === 'E') {
+            throw new Error(response.data.message);
+        } else if (response.data.status === 'S') {
+            allQuestions.value = response.data.data;
+        }
+    }).catch(message => error = message);
+}
+
+function createAnswers() {
+    const helperArray = [];
+    questions.forEach(el => {
+        helperArray.push(axios.get(
+            `http://739k121.mars-e1.mars-hosting.com/dm_quiz/answers?sid=${sessionStorage.getItem(
+                'sid')}&qst_id=${el.qst_id}`));
+    });
+    Promise.all(helperArray)
+    .then(response => {
+        response.forEach(obj => {
+            answers.push(obj.data.data);
+        });
+        answers.sort((a, b) => a[0].qst_id - b[0].qst_id);
+        answers.forEach((el) => {
+            el.sort(() => .5 - Math.random());
+        });
+        console.log('ANSWERS: ', answers);
+        questionsFetched = true;
+    })
+    .catch(message => error = message);
+}
+
+function pickedAnswer(ans_true, ans_id) {
+    stopTimer = true;
+    blocking = true;
+    correctAnswerArray.push({
+        level: questions[indexOfQuestion].qst_level,
+        correct: ans_true === 1
+    });
+    if (ans_true === 1) {
+        answerCorrect = 1;
+        emotion = 'happy';
+        if (level.value === 1) {
+            calculateScore(10);
+        } else {
+            calculateScore(20);
+        }
+        if (correctAnswerArray.length >= 3) {
+            addBonus();
+        }
+        if (indexOfQuestion === 4) {
+            nextLevel();
+            return;
+        }
+        reset();
+    } else {
+        emotion = 'angry';
+        answerWrong = ans_id;
+        numOfLives -= 1;
+        if (numOfLives === 0) {
+            store.setGameIsOver();
+            setTimeout(() => {
+                router.push({
+                    name: 'game-over',
+                    query: {
+                        score: score,
+                        status: 'LOST'
+                    }
+                });
+            }, 3000);
+            return;
+        }
+        if (indexOfQuestion === 4) {
+            nextLevel();
+            return;
+        }
+        setTimeout(() => {
+            emotion = 'normal';
+            indexOfQuestion += 1;
+            restartTimer = !restartTimer;
+            showQuestions = true;
+            showTimeIsUp = false;
+            stopTimer = false;
+            answerWrong = '';
+            blocking = false;
+        }, 3000);
+    }
+}
+
+function addBonus() {
+    if (correctAnswerArray[correctAnswerArray.length - 1].correct && correctAnswerArray[correctAnswerArray.length - 2].correct && correctAnswerArray[correctAnswerArray.length - 3].correct) {
+        for (let i = 1; i <= 3; i++) {
+            correctAnswerArray[correctAnswerArray.length - i].level === 1 ?
+                calculateScore(10) : calculateScore(20);
+        }
+        //to break the array of correct answers
+        correctAnswerArray.push({
+            level: 0,
+            correct: false
+        });
+    }
+}
+
+function nextLevel() {
+    if (level.value === 1) {
+        console.log('NEXT LEVEL');
+        resetNewLevel();
+    } else {
+        store.setGameIsOver();
+        setTimeout(() => {
+            router.push({
+                name: 'game-over',
+                query: {
+                    score: score + 200,
+                    status: 'W I N !!!!!!!!'
+                }
+            });
+        }, 3000);
+    }
+}
+
+function reset() {
+    setTimeout(() => {
+        emotion = 'normal';
+        indexOfQuestion += 1;
+        restartTimer = !restartTimer;
+        stopTimer = false;
+        answerCorrect = '';
+        blocking = false;
+    }, 3000);
+}
+
+function resetNewLevel() {
+    setTimeout(() => {
+        emotion = 'normal';
+        showTimeIsUp = false;
+        showQuestions = true;
+        indexOfQuestion = 0;
+        restartTimer = !restartTimer;
+        stopTimer = false;
+        answerCorrect = '';
+        blocking = false;
+        seconds = 15;
+        level.value = 2;
+    }, 3000);
+}
+
+function timeIsUp() {
+    emotion = 'angry';
+    showTimeIsUp = true;
+    numOfLives -= 1;
+    showQuestions = false;
+    if (numOfLives === 0) {
+        store.setGameIsOver();
+        setTimeout(() => {
+            router.push({
+                name: 'game-over',
+                query: {
+                    score: score,
+                    status: 'L O S T'
+                }
+            });
+        }, 3000);
+        return;
+    } else if (indexOfQuestion === 4) {
+        nextLevel();
+        return;
+    }
+    setTimeout(() => {
+        emotion = 'normal';
+        indexOfQuestion += 1;
+        restartTimer = !restartTimer;
+        showQuestions = true;
+        showTimeIsUp = false;
+    }, 3000);
+}
+
+function calculateScore(value) {
+    score += value;
+}
+
+onMounted(() => {
+    createAllQuestions(level.value);
+    console.log('GAME OVER:', store.isGameOver);
+});
+watch(allQuestions, () => {
+    while (questions.length !== 5) {
+        let random = Math.floor(Math.random() * allQuestions.value.length);
+        if (!questions.includes(allQuestions.value[random])) {
+            questions.push(allQuestions.value[random]);
+        }
+    }
+    questions.sort((a, b) => a.qst_id - b.qst_id);
+    console.log('QUESTIONS: ', questions);
+    createAnswers();
+});
+watch(level, () => {
+    indexOfQuestion = 0;
+    questions = [];
+    answers = [];
+    createAllQuestions(level.value);
+});
+</script>
+
 <template>
     <section id="level" :class="{level2:level===2}">
         <h1>QUESTIONS LEVEL {{ level }}</h1>
@@ -11,7 +250,6 @@
                    @time-is-up="timeIsUp"></Timer>
             <Harts :numOfLives="numOfLives"></Harts>
         </section>
-
         <p v-show="showTimeIsUp">Your time is up, one life lost!
         </p>
         <section v-if="questions.length && showQuestions>0" id="questions">
@@ -35,252 +273,6 @@
         <router-link :to="{name:'main'}">MAIN MENU</router-link>
     </section>
 </template>
-
-<script>
-import Emotions from "@/components/Emotions.vue";
-import axios from "axios";
-import {mapActions, mapGetters} from 'vuex';
-import Harts from "../components/Harts.vue";
-import Timer from "../components/Timer.vue";
-
-export default {
-    name: "Level",
-    components: {
-        Emotions,
-        Timer,
-        Harts
-    },
-    data() {
-        return {
-            level: 1,
-            error: '',
-            indexOfQuestion: 0,
-            allQuestions: [],
-            questions: [],
-            answers: [],
-            restartTimer: false,
-            stopTimer: false,
-            showTimeIsUp: false,
-            user: sessionStorage.getItem('username'),
-            score: 0,
-            numOfLives: 3,
-            showQuestions: true,
-            answerWrong: '',
-            answerCorrect: '',
-            blocking: false,
-            seconds: 20,
-            correctAnswerArray: [],
-            emotion: 'normal',
-            questionsFetched: false
-        };
-    },
-    methods: {
-        ...mapActions(['setGameIsOver']),
-        createAllQuestions(level) {
-            const request = axios.get(
-                `http://739k121.mars-e1.mars-hosting.com/dm_quiz/questions?sid=${sessionStorage.getItem(
-                    'sid')}&level=${level}`);
-            request.then(response => {
-                if (response.data.status === 'E') {
-                    throw new Error(response.data.message);
-                } else if (response.data.status === 'S') {
-                    this.allQuestions = response.data.data;
-                }
-            }).catch(message => this.error = message);
-        },
-        createAnswers() {
-            const helperArray = [];
-            this.questions.forEach(el => {
-                helperArray.push(axios.get(
-                    `http://739k121.mars-e1.mars-hosting.com/dm_quiz/answers?sid=${sessionStorage.getItem(
-                        'sid')}&qst_id=${el.qst_id}`));
-            });
-            Promise.all(helperArray)
-            .then(response => {
-                response.forEach(obj => {
-                    this.answers.push(obj.data.data);
-                });
-                this.answers.sort((a, b) => a[0].qst_id - b[0].qst_id);
-                this.answers.forEach((el) => {
-                    el.sort(() => .5 - Math.random());
-                });
-                console.log('ANSWERS: ', this.answers);
-                this.questionsFetched = true;
-            })
-            .catch(message => this.error = message);
-        },
-        pickedAnswer(ans_true, ans_id) {
-            this.stopTimer = true;
-            this.blocking = true;
-            this.correctAnswerArray.push({
-                level: this.questions[this.indexOfQuestion].qst_level,
-                correct: ans_true === 1
-            });
-            if (ans_true === 1) {
-                this.answerCorrect = 1;
-                this.emotion = 'happy';
-                if (this.level === 1) {
-                    this.calculateScore(10);
-                } else {
-                    this.calculateScore(20);
-                }
-                if (this.correctAnswerArray.length >= 3) {
-                    this.addBonus();
-                }
-                if (this.indexOfQuestion === 4) {
-                    this.nextLevel();
-                    return;
-                }
-                this.reset();
-            } else {
-                this.emotion = 'angry';
-                this.answerWrong = ans_id;
-                this.numOfLives -= 1;
-                if (this.numOfLives === 0) {
-                    this.setGameIsOver();
-                    setTimeout(() => {
-                        this.$router.push({
-                            name: 'game-over',
-                            query: {
-                                score: this.score,
-                                status: 'LOST'
-                            }
-                        });
-                    }, 3000);
-                    return;
-                }
-                if (this.indexOfQuestion === 4) {
-                    this.nextLevel();
-                    return;
-                }
-                setTimeout(() => {
-                    this.emotion = 'normal';
-                    this.indexOfQuestion += 1;
-                    this.restartTimer = !this.restartTimer;
-                    this.showQuestions = true;
-                    this.showTimeIsUp = false;
-                    this.stopTimer = false;
-                    this.answerWrong = '';
-                    this.blocking = false;
-                }, 3000);
-            }
-        },
-        addBonus() {
-            if (this.correctAnswerArray[this.correctAnswerArray.length - 1].correct && this.correctAnswerArray[this.correctAnswerArray.length - 2].correct && this.correctAnswerArray[this.correctAnswerArray.length - 3].correct) {
-                for (let i = 1; i <= 3; i++) {
-                    this.correctAnswerArray[this.correctAnswerArray.length - i].level === 1 ?
-                        this.calculateScore(10) : this.calculateScore(20);
-                }
-                //to break the array of correct answers
-                this.correctAnswerArray.push({
-                    level: 0,
-                    correct: false
-                });
-            }
-        },
-        nextLevel() {
-            if (this.level === 1) {
-                console.log('NEXT LEVEL');
-                this.resetNewLevel();
-            } else {
-                this.setGameIsOver();
-                setTimeout(() => {
-                    this.$router.push({
-                        name: 'game-over',
-                        query: {
-                            score: this.score + 200,
-                            status: 'W I N !!!!!!!!'
-                        }
-                    });
-                }, 3000);
-            }
-        },
-        reset() {
-            setTimeout(() => {
-                this.emotion = 'normal';
-                this.indexOfQuestion += 1;
-                this.restartTimer = !this.restartTimer;
-                this.stopTimer = false;
-                this.answerCorrect = '';
-                this.blocking = false;
-            }, 3000);
-        },
-        resetNewLevel() {
-            setTimeout(() => {
-                this.emotion = 'normal';
-                this.showTimeIsUp = false;
-                this.showQuestions = true;
-                this.indexOfQuestion = 0;
-                this.restartTimer = !this.restartTimer;
-                this.stopTimer = false;
-                this.answerCorrect = '';
-                this.blocking = false;
-                this.seconds = 15;
-                this.level = 2;
-            }, 3000);
-        },
-        timeIsUp() {
-            this.emotion = 'angry';
-            this.showTimeIsUp = true;
-            this.numOfLives -= 1;
-            this.showQuestions = false;
-            if (this.numOfLives === 0) {
-                this.setGameIsOver();
-                setTimeout(() => {
-                    this.$router.push({
-                        name: 'game-over',
-                        query: {
-                            score: this.score,
-                            status: 'L O S T'
-                        }
-                    });
-                }, 3000);
-                return;
-            } else if (this.indexOfQuestion === 4) {
-                this.nextLevel();
-                return;
-            }
-            setTimeout(() => {
-                this.emotion = 'normal';
-                this.indexOfQuestion += 1;
-                this.restartTimer = !this.restartTimer;
-                this.showQuestions = true;
-                this.showTimeIsUp = false;
-            }, 3000);
-        },
-        calculateScore(value) {
-            this.score += value;
-        }
-    },
-    computed: {
-        ...mapGetters(['isGameOver'])
-    },
-    mounted() {
-        this.createAllQuestions(this.level);
-        console.log('GAME OVER:', this.isGameOver);
-    },
-    watch: {
-        allQuestions() {
-            while (this.questions.length !== 5) {
-                let random = Math.floor(
-                    Math.random() * this.allQuestions.length);
-                if (!this.questions.includes(this.allQuestions[random])) {
-                    this.questions.push(this.allQuestions[random]);
-                }
-            }
-            this.questions.sort((a, b) => a.qst_id - b.qst_id);
-            console.log('QUESTIONS: ', this.questions);
-            this.createAnswers();
-        },
-        level() {
-            this.indexOfQuestion = 0;
-            this.questions = [];
-            this.answers = [];
-            this.createAllQuestions(this.level);
-        }
-    }
-};
-</script>
 
 <style scoped>
 #level {
