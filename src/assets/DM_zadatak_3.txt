@@ -1,0 +1,29 @@
+
+ - KONCEPT
+ Napraviti aplikaciju(kviz) u kojoj korisnik odgovara na nasumicna pitanja klikom na jedan od 4 ponudjena odgovora. Klikom na jedan od ponudjenih odgovora treba jasno staviti do znanja korisniku da li je odgovor tacan ili ne. Postoje dva nivoa pitanja (level 1, level 2). Na prvom nivou se korisniku prikazuju samo pitanja (level 1), ukoliko odgovori na tih 5 pitanja(a nije game over), prelazi na (level 2) pitanja kojih takodje moze da bude 5. Uslov za game over su 3 pogresna odgovora. Ukoliko je korisnik odgovorio na svih 10 pitanja a nije game over, znaci da je uspesno zavrsio igru i dobija odredjeni bonus.Nakon zavrsene igre(uspesno ili neuspesno) potrebno je upisati korisnikov rezultat u bazu putem servisa. Na glavnom ekranu omoguciti korisniku da pogleda 10 najboljih rezultata.
+ 
+ -  EKRANI
+	1. Login/Registracija
+		Napraviti formu za logovanje i/ili registraciju korisnika sa svim potrebnim validacijama i obavestenjima. Bilo bi dobro da svi ekrani aplikacije imaju slicnu temu. Npr background slika da prati neku temu ili slicno. Nakon uspesnog logovanja, servis ce vratiti nekoliko podataka(username, sid) koje treba smestiti u Session storage za kasnije koriscenje u aplikaciji.
+		
+	2. Main menu
+		Ekran na koji dolazimo nakon logovanja. Treba da prikazuje ime trenutnog korisnika sa nekom porukom i dva dugmeta(New game, Exit). Pored toga treba da stoji lista 10 najboljih rezultata. Ukoliko je korisnik negde na toj listi, boldovati njegov red ili nesto slicno. Exit dugme nas vraca na Login ekran i brise podatke iz Session storage-a. New game dugme prikazuje korisniku Level 1 ekran i zapocinje igru.
+		
+	3. Level 1
+		Ekran treba da sadrzi tajmer za odgovor koji odbrojava sekunde unazad, broj poena koje je korisnik zaradio, graficki prikaz koliko smo gresaka napravili(npr. tri srca, pa se za svaki pogresan odgovor skida jedno dok ne bude game over). Nakon svakog odgovora obavestavamo korisnika o tacnosti odgovora, prikazujemo novo pitanje i resetujemo tajmer. Potrebno je prikazati i na kom smo pitanju(npr. 2/5). Na ovom ekranu prikazujemo nasumicnih 5 pitanja koja su level 1.
+		
+	4. Level 2
+		Slican ekran kao i prethodni(moze da bude drugaciji background-image ili color), samo sto su sada pitanja level 2. Uzeti u obzir broj napravljenih gresaka sa prvog ekrana. 
+		
+	5. Game over	
+		Ovaj ekran treba da bude modal(pop-up) koji iskace na sredini ekrana i obavestava korisnika da je uspesno ili neuspesno zavrsio igru i da je osvojio odredjeni broj poena.
+		Mora imati i dugme za zatvaranje koje vraca korisnika na Main menu. U ovom trenutku se radi update rezultata.
+		
+ - PRAVILA
+	- Tajmer za level 1 pitanja je 20 sekundi, a za level 2 15 sekundi.
+	- Ukoliko tajmer istekne pre nego sto korisnik odgovori, obavestiti ga da je vreme isteklo i racunati to kao pogresan odgovor.
+	- Level 1 pitanja vrede 10 poena, a level 2 20 poena.
+	- Ukoliko korisnik odgovori tacno na bilo koja tri pitanja zaredom, duplirati poene za ta tri pitanja. Nakon toga se taj brojac resetuje. Dakle ako odgovori i na cetvrto pitanje za redom, to ce se racunati kao prvi tacan odgovor u nizu.
+	- Ukoliko je korisnik uspesno stigao do kraja igre(odgovorio na svih 10 pitanja, anije napravio 3 greske), dobija bonus 200 poena.
+	
+		
