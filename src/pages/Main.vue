@@ -12,8 +12,8 @@ let error = ref('');
 
 function exitGame() {
     sessionStorage.clear();
-    store.setNotAdmin();
     router.push({name: 'welcome'});
+    store.setNotAdmin();
 }
 
 function goToLevel() {
@@ -42,7 +42,7 @@ onMounted(() => {
 
 <template>
     <section id="main">
-        <h1>Welcome {{ user }}! </h1>
+        <h1>Welcome {{ user }} </h1>
         <button @click="goToLevel">
             NEW GAME
         </button>
@@ -69,6 +69,7 @@ onMounted(() => {
                 </p>
             </template>
         </section>
+        <p v-else>no highs-cores loaded...</p>
     </section>
 </template>
 

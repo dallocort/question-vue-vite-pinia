@@ -1,60 +1,61 @@
 <script setup>
 import axios from "axios";
+import {ref} from "vue";
 import {onBeforeRouteLeave} from "vue-router";
 
-let question = '';
-let correctAnswer = '';
-let answer2 = '';
-let answer3 = '';
-let answer4 = '';
-let qst_level = '1';
-let info = '';
-let buttonDisabled = false;
+let question = ref('');
+let correctAnswer = ref('');
+let answer2 = ref('');
+let answer3 = ref('');
+let answer4 = ref('');
+let qst_level = ref('1');
+let info = ref('');
+let buttonDisabled = ref(false);
 
 function addQuestion() {
-    buttonDisabled = true;
-    if (question !== '' && correctAnswer !== '' && answer2 !== '' && answer3 !== '' && answer4 !== '' && (qst_level === 1 || qst_level === 2 || qst_level === '2' || qst_level === '1')) {
+    buttonDisabled.value = true;
+    if (question.value !== '' && correctAnswer.value !== '' && answer2.value !== '' && answer3.value !== '' && answer4.value !== '' && (qst_level.value === 1 || qst_level.value === 2 || qst_level.value === '2' || qst_level.value === '1')) {
         const request = axios.post(
             'http://739k121.mars-e1.mars-hosting.com/inkvizicija/unosPitanja.js',
             {
-                odgovor2: answer2,
-                odgovor3: answer3,
-                odgovor4: answer4,
-                qst_level: Number(qst_level),
-                question: question,
-                tacanOdgovor: correctAnswer
+                odgovor2: answer2.value,
+                odgovor3: answer3.value,
+                odgovor4: answer4.value,
+                qst_level: Number(qst_level.value),
+                question: question.value,
+                tacanOdgovor: correctAnswer.value
             });
         request.then(response => {
             if (response.status !== 200) {
                 throw new Error(response.data.message);
             } else {
-                info = 'Question added successfully!!';
+                info.value = 'Question added successfully!!';
                 reset();
-                buttonDisabled = false;
+                buttonDisabled.value = false;
             }
         })
         .catch(message => {
-            buttonDisabled = false;
-            info = message;
+            buttonDisabled.value = false;
+            info.value = message;
         });
     } else {
-        buttonDisabled = false;
-        info = 'error, enter data correctly';
-        setTimeout(() => info = '', 3000);
+        buttonDisabled.value = false;
+        info.value = 'error, enter data correctly';
+        setTimeout(() => info.value = '', 3000);
     }
 }
 
 function reset() {
-    answer2 = '';
-    answer3 = '';
-    answer4 = '';
-    qst_level = '1';
-    question = '';
-    correctAnswer = '';
-    setTimeout(() => info = '', 3000);
+    answer2.value = '';
+    answer3.value = '';
+    answer4.value = '';
+    qst_level.value = '1';
+    question.value = '';
+    correctAnswer.value = '';
+    setTimeout(() => info.value = '', 3000);
 }
 
-onBeforeRouteLeave(() => buttonDisabled = false);
+onBeforeRouteLeave(() => buttonDisabled.value = false);
 </script>
 
 <template>

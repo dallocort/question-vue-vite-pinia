@@ -1,10 +1,10 @@
 <script setup>
 import axios from "axios";
-import {computed, onMounted} from "vue";
+import {computed, onMounted, ref} from "vue";
 
-let questions = [];
-let info = '';
-let searchText = '';
+let questions = ref([]);
+let info = ref('');
+let searchText = ref('');
 
 function createAllQuestions() {
     const request = axios.get(
@@ -14,10 +14,10 @@ function createAllQuestions() {
         if (response.data.status === 'E') {
             throw new Error(response.data.message);
         } else if (response.data.status === 'S') {
-            questions = response.data.data;
-            console.log(questions);
+            questions.value = response.data.data;
+            console.log(questions.value);
         }
-    }).catch(message => info = message);
+    }).catch(message => info.value = message);
 }
 
 function deleteQuestion(id) {
@@ -28,19 +28,19 @@ function deleteQuestion(id) {
         if (response.status !== 200) {
             throw new Error(response.data.message);
         } else if (response.status === 200) {
-            info = 'Question deleted successfully!!';
-            setTimeout(() => info = '', 3000);
+            info.value = 'Question deleted successfully!!';
+            setTimeout(() => info.value = '', 3000);
             createAllQuestions();
         }
-    }).catch(message => info = message);
+    }).catch(message => info.value = message);
 }
 
 const filteredQuestions = computed(() => {
-    if (searchText.length > 2) {
-        return questions.filter(qst => qst.question.toLowerCase()
-        .includes(searchText.toLowerCase()));
+    if (searchText.value.length > 2) {
+        return questions.value.filter(qst => qst.question.toLowerCase()
+        .includes(searchText.value.toLowerCase()));
     } else {
-        return questions;
+        return questions.value;
     }
 });
 onMounted(() => {
