@@ -61,10 +61,10 @@ watch(searchText, () => {
                 p.innerHTML = p?.innerHTML?.replace(re2, '');
             });
             if (searchText.value !== "") {
-                let re = new RegExp(searchText.value, "g");
+                let re = new RegExp(searchText.value, "gi");
                 paragraphs.forEach((p) => {
                     p.innerHTML = p?.innerHTML?.replace(re,
-                        `<mark>${searchText.value}</mark>`);
+                        (match) => `<mark>${match}</mark>`);
                 });
             }
         }
