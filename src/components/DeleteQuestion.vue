@@ -1,6 +1,6 @@
 <script setup>
 import axios from "axios";
-import {computed, onMounted, ref} from "vue";
+import {computed, nextTick, onMounted, ref, watch} from "vue";
 
 let questions = ref([]);
 let info = ref('');
@@ -15,7 +15,6 @@ function createAllQuestions() {
             throw new Error(response.data.message);
         } else if (response.data.status === 'S') {
             questions.value = response.data.data;
-            console.log(questions.value);
         }
     }).catch(message => info.value = message);
 }
@@ -39,7 +38,8 @@ function deleteQuestion(id) {
 }
 
 const filteredQuestions = computed(() => {
-    if (searchText.value.length > 2) {
+    // to respond only on the second character >2
+    if (searchText.value.length >= 1) {
         return questions.value.filter(qst => qst.question.toLowerCase()
         .includes(searchText.value.toLowerCase()));
     } else {
@@ -48,6 +48,27 @@ const filteredQuestions = computed(() => {
 });
 onMounted(() => {
     createAllQuestions();
+});
+watch(searchText, () => {
+    //without nextTick filteredQuestions will run after this watch, need to wait DOM changes first
+    nextTick(() => {
+        let paragraphs = document.getElementById("listOfQuestions")?.childNodes;
+        if (paragraphs) {
+            let re1 = /<mark>/g;
+            let re2 = /<\/mark>/g;
+            paragraphs?.forEach((p) => {
+                p.innerHTML = p?.innerHTML?.replace(re1, '');
+                p.innerHTML = p?.innerHTML?.replace(re2, '');
+            });
+            if (searchText.value !== "") {
+                let re = new RegExp(searchText.value, "g");
+                paragraphs.forEach((p) => {
+                    p.innerHTML = p?.innerHTML?.replace(re,
+                        `<mark>${searchText.value}</mark>`);
+                });
+            }
+        }
+    });
 });
 </script>
 
