@@ -1,6 +1,5 @@
 <script setup>
-let name = "Harts";
-const props = defineProps({numOfLives: String});
+defineProps({numOfLives: Number});
 </script>
 
 <template>
@@ -9,15 +8,12 @@ const props = defineProps({numOfLives: String});
             <article :class="'heart'+num">
                 <img alt="hearts" src="../assets/images/heart.png"/>
             </article>
-
         </template>
         <template v-for="num in 3" :key="num">
             <article>
                 <img alt="hearts" src="../assets/images/heart-empty.png"/>
             </article>
-
         </template>
-
     </section>
 </template>
 

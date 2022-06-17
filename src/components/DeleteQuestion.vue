@@ -21,18 +21,21 @@ function createAllQuestions() {
 }
 
 function deleteQuestion(id) {
-    const request = axios.delete(
-        `http://739k121.mars-e1.mars-hosting.com/inkvizicija/unosPitanja.js?id=${id}`);
-    request.then(response => {
-        console.log(response);
-        if (response.status !== 200) {
-            throw new Error(response.data.message);
-        } else if (response.status === 200) {
-            info.value = 'Question deleted successfully!!';
-            setTimeout(() => info.value = '', 3000);
-            createAllQuestions();
-        }
-    }).catch(message => info.value = message);
+    let decision = confirm('Are you sure you want to delete?');
+    if (decision) {
+        const request = axios.delete(
+            `http://739k121.mars-e1.mars-hosting.com/inkvizicija/unosPitanja.js?id=${id}`);
+        request.then(response => {
+            console.log(response);
+            if (response.status !== 200) {
+                throw new Error(response.data.message);
+            } else if (response.status === 200) {
+                info.value = 'Question deleted successfully!!';
+                setTimeout(() => info.value = '', 3000);
+                createAllQuestions();
+            }
+        }).catch(message => info.value = message);
+    }
 }
 
 const filteredQuestions = computed(() => {

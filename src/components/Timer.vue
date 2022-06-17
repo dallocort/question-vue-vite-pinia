@@ -1,5 +1,5 @@
 <script setup>
-import {defineEmits, defineProps, onMounted, watch} from "vue";
+import {onMounted, ref, watch} from "vue";
 
 const emits = defineEmits(['time-is-up']);
 const props = defineProps({
@@ -14,31 +14,30 @@ const props = defineProps({
         type: Boolean
     }
 });
-let currentTime = props.seconds;
-let interval = '';
+let currentTime = ref(props.seconds);
+let interval = null;
 
 function count() {
-    this.interval = setInterval(() => this.currentTime -= 1, 1000);
+    interval = setInterval(() => currentTime.value -= 1, 1000);
 }
 
-//todo can it be like this, currentTime is primitive?
-watch(() => currentTime, (newValue) => {
+watch(currentTime, (newValue) => {
     if (newValue <= 0) {
         clearInterval(interval);
-        interval = '';
+        interval = null;
         emits('time-is-up', this);//todo šta je this
     }
 });
 watch(() => props.restart, () => {
-    this.currentTime = props.seconds;
-    if (!this.interval) {
-        this.count();
+    currentTime.value = props.seconds;
+    if (!interval) {
+        count();
     }
 });
 watch(() => props.stop, (newValue) => {
     if (newValue) {
         clearInterval(interval);
-        interval = '';
+        interval = null;
     }
 });
 onMounted(() => {
@@ -51,7 +50,3 @@ onMounted(() => {
         <p>TIME: {{ currentTime }}</p>
     </section>
 </template>
-
-<style scoped>
-
-</style>

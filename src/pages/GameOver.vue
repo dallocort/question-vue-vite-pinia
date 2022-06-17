@@ -79,7 +79,7 @@ onBeforeRouteLeave(() => {
                  @mousemove="dragging"
                  @mouseup="drop"
                  @mousedown.left="drag">
-            <header> GAME {{ status }}</header>
+            <header> G A M E &nbsp;&nbsp;&nbsp; {{ status }}</header>
             <p>POINTS: {{ score }}</p>
             <p v-if="scoreUpdate">{{ scoreUpdate }}</p>
             <button @click="goToMain" @mousedown.stop>MAIN

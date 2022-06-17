@@ -10,25 +10,25 @@ import {useStore} from "../store/store.js";
 const router = useRouter();
 const store = useStore();
 let level = ref(1);
-let error = '';
-let indexOfQuestion = 0;
+let error = ref('');
+let indexOfQuestion = ref(0);
 let allQuestions = ref([]);
-let questions = [];
-let answers = [];
-let restartTimer = false;
-let stopTimer = false;
-let showTimeIsUp = false;
+let questions = ref([]);
+let answers = ref([]);
+let restartTimer = ref(false);
+let stopTimer = ref(false);
+let showTimeIsUp = ref(false);
 let user = sessionStorage.getItem('username');
-let score = 0;
-let numOfLives = 3;
-let showQuestions = true;
-let answerWrong = '';
-let answerCorrect = '';
-let blocking = false;
-let seconds = 20;
-let correctAnswerArray = [];
-let emotion = 'normal';
-let questionsFetched = false;
+let score = ref(0);
+let numOfLives = ref(3);
+let showQuestions = ref(true);
+let answerWrong = ref('');
+let answerCorrect = ref('');
+let blocking = ref(false);
+let seconds = ref(5);
+let correctAnswerArray = ref([]);
+let emotion = ref('normal');
+let questionsFetched = ref(false);
 
 function createAllQuestions(lvl) {
     const request = axios.get(
@@ -45,7 +45,7 @@ function createAllQuestions(lvl) {
 
 function createAnswers() {
     const helperArray = [];
-    questions.forEach(el => {
+    questions.value.forEach(el => {
         helperArray.push(axios.get(
             `http://739k121.mars-e1.mars-hosting.com/dm_quiz/answers?sid=${sessionStorage.getItem(
                 'sid')}&qst_id=${el.qst_id}`));
@@ -53,16 +53,16 @@ function createAnswers() {
     Promise.all(helperArray)
     .then(response => {
         response.forEach(obj => {
-            answers.push(obj.data.data);
+            answers.value.push(obj.data.data);
         });
-        answers.sort((a, b) => a[0].qst_id - b[0].qst_id);
-        answers.forEach((el) => {
+        answers.value.sort((a, b) => a[0].qst_id - b[0].qst_id);
+        answers.value.forEach((el) => {
             el.sort(() => .5 - Math.random());
         });
-        console.log('ANSWERS: ', answers);
-        questionsFetched = true;
+        console.log('ANSWERS: ', answers.value);
+        questionsFetched.value = true;
     })
-    .catch(message => error = message);
+    .catch(message => error.value = message);
 }
 
 function pickedAnswer(ans_true, ans_id) {
@@ -110,14 +110,14 @@ function pickedAnswer(ans_true, ans_id) {
             return;
         }
         setTimeout(() => {
-            emotion = 'normal';
-            indexOfQuestion += 1;
-            restartTimer = !restartTimer;
-            showQuestions = true;
-            showTimeIsUp = false;
-            stopTimer = false;
-            answerWrong = '';
-            blocking = false;
+            emotion.value = 'normal';
+            indexOfQuestion.value += 1;
+            restartTimer.value = !restartTimer;
+            showQuestions.value = true;
+            showTimeIsUp.value = false;
+            stopTimer.value = false;
+            answerWrong.value = '';
+            blocking.value = false;
         }, 3000);
     }
 }
@@ -156,12 +156,12 @@ function nextLevel() {
 
 function reset() {
     setTimeout(() => {
-        emotion = 'normal';
-        indexOfQuestion += 1;
-        restartTimer = !restartTimer;
-        stopTimer = false;
-        answerCorrect = '';
-        blocking = false;
+        emotion.value = 'normal';
+        indexOfQuestion.value += 1;
+        restartTimer.value = !restartTimer;
+        stopTimer.value = false;
+        answerCorrect.value = '';
+        blocking.value = false;
     }, 3000);
 }
 
@@ -175,38 +175,38 @@ function resetNewLevel() {
         stopTimer = false;
         answerCorrect = '';
         blocking = false;
-        seconds = 15;
+        seconds = 5;
         level.value = 2;
     }, 3000);
 }
 
 function timeIsUp() {
-    emotion = 'angry';
-    showTimeIsUp = true;
-    numOfLives -= 1;
-    showQuestions = false;
-    if (numOfLives === 0) {
+    emotion.value = 'angry';
+    showTimeIsUp.value = true;
+    numOfLives.value -= 1;
+    showQuestions.value = false;
+    if (numOfLives.value === 0) {
         store.setGameIsOver();
         setTimeout(() => {
             router.push({
                 name: 'game-over',
                 query: {
-                    score: score,
+                    score: score.value,
                     status: 'L O S T'
                 }
             });
         }, 3000);
         return;
-    } else if (indexOfQuestion === 4) {
+    } else if (indexOfQuestion.value === 4) {
         nextLevel();
         return;
     }
     setTimeout(() => {
-        emotion = 'normal';
-        indexOfQuestion += 1;
-        restartTimer = !restartTimer;
-        showQuestions = true;
-        showTimeIsUp = false;
+        emotion.value = 'normal';
+        indexOfQuestion.value += 1;
+        restartTimer.value = !restartTimer.value;
+        showQuestions.value = true;
+        showTimeIsUp.value = false;
     }, 3000);
 }
 
@@ -216,23 +216,22 @@ function calculateScore(value) {
 
 onMounted(() => {
     createAllQuestions(level.value);
-    console.log('GAME OVER:', store.isGameOver);
 });
 watch(allQuestions, () => {
-    while (questions.length !== 5) {
+    while (questions.value.length !== 5) {
         let random = Math.floor(Math.random() * allQuestions.value.length);
-        if (!questions.includes(allQuestions.value[random])) {
-            questions.push(allQuestions.value[random]);
+        if (!questions.value.includes(allQuestions.value[random])) {
+            questions.value.push(allQuestions.value[random]);
         }
     }
-    questions.sort((a, b) => a.qst_id - b.qst_id);
-    console.log('QUESTIONS: ', questions);
+    questions.value.sort((a, b) => a.qst_id - b.qst_id);
+    console.log('QUESTIONS: ', questions.value);
     createAnswers();
 });
 watch(level, () => {
-    indexOfQuestion = 0;
-    questions = [];
-    answers = [];
+    indexOfQuestion.value = 0;
+    questions.value = [];
+    answers.value = [];
     createAllQuestions(level.value);
 });
 </script>
@@ -248,7 +247,7 @@ watch(level, () => {
                    :seconds="seconds"
                    :stop="stopTimer"
                    @time-is-up="timeIsUp"></Timer>
-            <Harts :numOfLives="numOfLives"></Harts>
+            <Harts :numOfLives.number="numOfLives"></Harts>
         </section>
         <p v-show="showTimeIsUp">Your time is up, one life lost!
         </p>
