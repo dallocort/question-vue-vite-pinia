@@ -55,7 +55,12 @@ function reset() {
     setTimeout(() => info.value = '', 3000);
 }
 
-onBeforeRouteLeave(() => buttonDisabled.value = false);
+onBeforeRouteLeave((_to, _from, next) => {
+    //initial value to disable button (ADD QUESTION) click
+    buttonDisabled.value = false;
+    //to proceed with routing
+    next();
+});
 </script>
 
 <template>

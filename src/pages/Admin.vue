@@ -1,22 +1,20 @@
 <script setup>
-import {ref} from "vue";
+import {shallowRef} from "vue";
 import DeleteQuestion from '../components/DeleteQuestion.vue';
 import NewQuestion from '../components/NewQuestion.vue';
-//todo why this is not working with: <component :is="component"></component>
-//todo main menu doesn't work also
-let component = ref('NewQuestion');
+
+const component = shallowRef(NewQuestion);
 </script>
 
 <template>
     <section id="admin">
-        <button :disabled="component==='NewQuestion'"
-                @click="component='NewQuestion'">New Question
+        <button :disabled="component===NewQuestion"
+                @click="component=NewQuestion">New Question
         </button>
-        <button :disabled="component==='DeleteQuestion'"
-                @click="component='DeleteQuestion'">Delete Question
+        <button :disabled="component===DeleteQuestion"
+                @click="component=DeleteQuestion">Delete Question
         </button>
-        <NewQuestion v-if="component==='NewQuestion'"></NewQuestion>
-        <DeleteQuestion v-else></DeleteQuestion>
+        <component :is="component"/>
         <router-link :to="{name:'main'}">MAIN MENU</router-link>
     </section>
 </template>
