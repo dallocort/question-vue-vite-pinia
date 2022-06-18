@@ -1,45 +1,50 @@
 <script setup>
 import axios from "axios";
-import {onMounted} from "vue";
+import {onMounted, ref} from "vue";
 import {onBeforeRouteLeave, useRoute, useRouter} from "vue-router";
 import {useStore} from "../store/store.js";
 
 const route = useRoute();
 const router = useRouter();
 const store = useStore();
-let scoreUpdate = '';
+let scoreUpdate = ref('');
 let status = route.query.status;
 let score = route.query.score;
+let startElX = 0;
+let startElY = 0;
+let startMouseX = 0;
+let startMouseY = 0;
+let moving = false;
 
 function drag(e) {
-    const doc = document.getElementById('modal');
-    this.startElX = doc.offsetLeft;
-    this.startElY = doc.offsetTop;
-    this.startMouseX = e.clientX;
-    this.startMouseY = e.clientY;
+    const doc = window.document.getElementById('modal');
+    startElX = doc.offsetLeft;
+    startElY = doc.offsetTop;
+    startMouseX = e.clientX;
+    startMouseY = e.clientY;
     doc.style.position = 'absolute';
     doc.style.margin = '0';
-    doc.style.left = this.startElX + 'px';
-    doc.style.top = this.startElY + 'px';
-    this.moving = true;
+    doc.style.left = startElX + 'px';
+    doc.style.top = startElY + 'px';
+    moving = true;
 }
 
 function dragging(e) {
-    const doc = document.getElementById('modal');
-    if (this.moving) {
-        let movedMouseX = this.startMouseX - e.clientX;
-        let movedMouseY = this.startMouseY - e.clientY;
-        doc.style.left = this.startElX - movedMouseX + "px";
-        doc.style.top = this.startElY - movedMouseY + "px";
-        this.startElX = doc.offsetLeft;
-        this.startElY = doc.offsetTop;
-        this.startMouseX = e.clientX;
-        this.startMouseY = e.clientY;
+    if (moving) {
+        const doc = window.document.getElementById('modal');
+        let movedMouseX = startMouseX - e.clientX;
+        let movedMouseY = startMouseY - e.clientY;
+        doc.style.left = startElX - movedMouseX + "px";
+        doc.style.top = startElY - movedMouseY + "px";
+        startElX = doc.offsetLeft;
+        startElY = doc.offsetTop;
+        startMouseX = e.clientX;
+        startMouseY = e.clientY;
     }
 }
 
 function drop() {
-    this.moving = false;
+    moving = false;
 }
 
 function goToMain() {
@@ -48,25 +53,26 @@ function goToMain() {
 
 onMounted(() => {
     if (Number.isInteger(Number(route.query.score))) {
-        const request = axios.put(
-            'http://739k121.mars-e1.mars-hosting.com/dm_quiz/score', {
-                sid: sessionStorage.getItem('sid'),
-                score: Number(route.query.score)
-            });
-        request.then(response => {
-            if (response.data.status === 'E') {
-                throw new Error(response.data.message);
-            } else if (response.data.status === 'S') {
-                scoreUpdate = 'Score updated successfully!!';
-            }
-        })
-        .catch(message => scoreUpdate = message + ' - Score not updated!!');
+        if (+route.query.score !== 0) {
+            const request = axios.put(
+                'http://739k121.mars-e1.mars-hosting.com/dm_quiz/score', {
+                    sid: sessionStorage.getItem('sid'),
+                    score: Number(route.query.score)
+                });
+            request.then(response => {
+                if (response.data.status === 'E') {
+                    throw new Error(response.data.message);
+                } else if (response.data.status === 'S') {
+                    scoreUpdate.value = 'Score updated successfully!!';
+                }
+            })
+            .catch(
+                message => scoreUpdate.value = message + ' - Score not updated!!');
+        }
     }
-    console.log('GAME OVER:', store.isGameOver);
 });
 onBeforeRouteLeave(() => {
     store.setGameNotOver();
-    console.log('GAME OVER:', store.isGameOver);
 });
 </script>
 
@@ -82,8 +88,7 @@ onBeforeRouteLeave(() => {
             <header> G A M E &nbsp;&nbsp;&nbsp; {{ status }}</header>
             <p>POINTS: {{ score }}</p>
             <p v-if="scoreUpdate">{{ scoreUpdate }}</p>
-            <button @click="goToMain" @mousedown.stop>MAIN
-                                                      MENU
+            <button @click="goToMain" @mousedown.stop>MAIN MENU
             </button>
         </section>
     </div>

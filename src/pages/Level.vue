@@ -23,9 +23,9 @@ let score = ref(0);
 let numOfLives = ref(3);
 let showQuestions = ref(true);
 let answerWrong = ref('');
-let answerCorrect = ref(null);
+let answerCorrect = ref(0);
 let blocking = ref(false);
-let seconds = ref(50);
+let seconds = ref(20);
 let correctAnswerArray = ref([]);
 let emotion = ref('normal');
 let questionsFetched = ref(false);
@@ -59,7 +59,6 @@ function createAnswers() {
         answers.value.forEach((el) => {
             el.sort(() => .5 - Math.random());
         });
-        console.log('ANSWERS: ', answers.value);
         questionsFetched.value = true;
     })
     .catch(message => error.value = message);
@@ -98,21 +97,21 @@ function pickedAnswer(ans_true, ans_id) {
                 router.push({
                     name: 'game-over',
                     query: {
-                        score: score,
+                        score: score.value,
                         status: 'LOST'
                     }
                 });
             }, 3000);
             return;
         }
-        if (indexOfQuestion === 4) {
+        if (indexOfQuestion.value === 4) {
             nextLevel();
             return;
         }
         setTimeout(() => {
             emotion.value = 'normal';
             indexOfQuestion.value += 1;
-            restartTimer.value = !restartTimer;
+            restartTimer.value = !restartTimer.value;
             showQuestions.value = true;
             showTimeIsUp.value = false;
             stopTimer.value = false;
@@ -138,7 +137,6 @@ function addBonus() {
 
 function nextLevel() {
     if (level.value === 1) {
-        console.log('NEXT LEVEL');
         resetNewLevel();
     } else {
         store.setGameIsOver();
@@ -160,7 +158,7 @@ function reset() {
         indexOfQuestion.value += 1;
         restartTimer.value = !restartTimer;
         stopTimer.value = false;
-        answerCorrect.value = '';
+        answerCorrect.value = 0;
         blocking.value = false;
     }, 3000);
 }
@@ -171,11 +169,11 @@ function resetNewLevel() {
         showTimeIsUp.value = false;
         showQuestions.value = true;
         indexOfQuestion.value = 0;
-        restartTimer.value = !restartTimer;
+        restartTimer.value = !restartTimer.value;
         stopTimer.value = false;
-        answerCorrect.value = '';
+        answerCorrect.value = 0;
         blocking.value = false;
-        seconds.value = 5;
+        seconds.value = 15;
         level.value = 2;
     }, 3000);
 }
@@ -225,7 +223,6 @@ watch(allQuestions, () => {
         }
     }
     questions.value.sort((a, b) => a.qst_id - b.qst_id);
-    console.log('QUESTIONS: ', questions.value);
     createAnswers();
 });
 watch(level, () => {

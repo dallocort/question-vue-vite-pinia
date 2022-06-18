@@ -29,7 +29,6 @@ onMounted(() => {
         `http://739k121.mars-e1.mars-hosting.com/dm_quiz/highScores.value?sid=${sessionStorage.getItem(
             'sid')}`);
     request.then(response => {
-        console.log(response);
         if (response?.data?.status === 'E') {
             throw new Error(response.data.message);
         } else if (response?.data?.status === 'S') {
