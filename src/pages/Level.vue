@@ -23,9 +23,9 @@ let score = ref(0);
 let numOfLives = ref(3);
 let showQuestions = ref(true);
 let answerWrong = ref('');
-let answerCorrect = ref('');
+let answerCorrect = ref(null);
 let blocking = ref(false);
-let seconds = ref(5);
+let seconds = ref(50);
 let correctAnswerArray = ref([]);
 let emotion = ref('normal');
 let questionsFetched = ref(false);
@@ -66,33 +66,33 @@ function createAnswers() {
 }
 
 function pickedAnswer(ans_true, ans_id) {
-    stopTimer = true;
-    blocking = true;
-    correctAnswerArray.push({
-        level: questions[indexOfQuestion].qst_level,
+    stopTimer.value = true;
+    blocking.value = true;
+    correctAnswerArray.value.push({
+        level: questions.value[indexOfQuestion.value].qst_level,
         correct: ans_true === 1
     });
     if (ans_true === 1) {
-        answerCorrect = 1;
-        emotion = 'happy';
+        answerCorrect.value = 1;
+        emotion.value = 'happy';
         if (level.value === 1) {
             calculateScore(10);
         } else {
             calculateScore(20);
         }
-        if (correctAnswerArray.length >= 3) {
+        if (correctAnswerArray.value.length >= 3) {
             addBonus();
         }
-        if (indexOfQuestion === 4) {
+        if (indexOfQuestion.value === 4) {
             nextLevel();
             return;
         }
         reset();
     } else {
-        emotion = 'angry';
-        answerWrong = ans_id;
-        numOfLives -= 1;
-        if (numOfLives === 0) {
+        emotion.value = 'angry';
+        answerWrong.value = ans_id;
+        numOfLives.value -= 1;
+        if (numOfLives.value === 0) {
             store.setGameIsOver();
             setTimeout(() => {
                 router.push({
@@ -123,13 +123,13 @@ function pickedAnswer(ans_true, ans_id) {
 }
 
 function addBonus() {
-    if (correctAnswerArray[correctAnswerArray.length - 1].correct && correctAnswerArray[correctAnswerArray.length - 2].correct && correctAnswerArray[correctAnswerArray.length - 3].correct) {
+    if (correctAnswerArray.value[correctAnswerArray.value.length - 1].correct && correctAnswerArray.value[correctAnswerArray.value.length - 2].correct && correctAnswerArray.value[correctAnswerArray.value.length - 3].correct) {
         for (let i = 1; i <= 3; i++) {
-            correctAnswerArray[correctAnswerArray.length - i].level === 1 ?
+            correctAnswerArray.value[correctAnswerArray.value.length - i].level === 1 ?
                 calculateScore(10) : calculateScore(20);
         }
         //to break the array of correct answers
-        correctAnswerArray.push({
+        correctAnswerArray.value.push({
             level: 0,
             correct: false
         });
@@ -167,15 +167,15 @@ function reset() {
 
 function resetNewLevel() {
     setTimeout(() => {
-        emotion = 'normal';
-        showTimeIsUp = false;
-        showQuestions = true;
-        indexOfQuestion = 0;
-        restartTimer = !restartTimer;
-        stopTimer = false;
-        answerCorrect = '';
-        blocking = false;
-        seconds = 5;
+        emotion.value = 'normal';
+        showTimeIsUp.value = false;
+        showQuestions.value = true;
+        indexOfQuestion.value = 0;
+        restartTimer.value = !restartTimer;
+        stopTimer.value = false;
+        answerCorrect.value = '';
+        blocking.value = false;
+        seconds.value = 5;
         level.value = 2;
     }, 3000);
 }
@@ -211,7 +211,7 @@ function timeIsUp() {
 }
 
 function calculateScore(value) {
-    score += value;
+    score.value += value;
 }
 
 onMounted(() => {

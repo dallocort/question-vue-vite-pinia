@@ -1,14 +1,14 @@
 <script setup>
-import {defineProps, onMounted} from "vue";
+import {onMounted, ref} from "vue";
 
-const props = defineProps({
+defineProps({
     emotion: {
         type: String,
         default: 'normal'
     }
 });
-let blink = false;
-onMounted(() => setInterval(() => blink = !this.blink, 5000));
+const blink = ref(false);
+onMounted(() => setInterval(() => blink.value = !blink.value, 3000));
 </script>
 
 <template>
