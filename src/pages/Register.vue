@@ -1,6 +1,6 @@
 <script setup>
 import axios from "axios";
-import {onMounted, ref} from "vue";
+import {ref} from "vue";
 import {onBeforeRouteLeave, useRouter} from "vue-router";
 
 const router = useRouter();
@@ -46,34 +46,35 @@ onBeforeRouteLeave(() => {
     console.log('register leave');
     buttonDisabled = false;
 });
-onMounted(() => {
-    console.log('REGISTER M');
-});
 </script>
 
 <template>
     <section id="register" :class="{cursor:buttonDisabled}">
-        <h1>Create new account:</h1>
-        <label for="username">USERNAME:&nbsp;&nbsp;</label>
-        <input id="username"
-               v-model="username"
-               autofocus
-               name="username"
-               type="text"
-               @keydown.enter="register"/>
-        <br/>
-        <br/>
-        <label for="password">PASSWORD:&nbsp;&nbsp;</label>
-        <input id="password"
-               v-model="password"
-               name="password"
-               type="password"
-               @keydown.enter="register"/>
-        <br/>
-        <button :disabled="buttonDisabled" @click="register">CREATE ACCOUNT
-        </button>
-        <p v-if="error" class="error">{{ error }}</p>
-        <router-link :to="{name:'main'}">MAIN MENU</router-link>
+        <form>
+            <h1>Create new account:</h1>
+            <label for="username">USERNAME:&nbsp;&nbsp;</label>
+            <input id="username"
+                   v-model="username"
+                   autocomplete="username"
+                   autofocus
+                   name="username"
+                   type="text"
+                   @keydown.enter="register"/>
+            <br/>
+            <br/>
+            <label for="password">PASSWORD:&nbsp;&nbsp;</label>
+            <input id="password"
+                   v-model="password"
+                   autocomplete="current-password"
+                   name="password"
+                   type="password"
+                   @keydown.enter="register"/>
+            <br/>
+            <button :disabled="buttonDisabled" @click="register">CREATE ACCOUNT
+            </button>
+            <p v-if="error" class="error">{{ error }}</p>
+            <router-link :to="{name:'main'}">MAIN MENU</router-link>
+        </form>
     </section>
 </template>
 

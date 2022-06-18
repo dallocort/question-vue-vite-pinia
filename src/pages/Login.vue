@@ -39,26 +39,30 @@ function login() {
 
 <template>
     <section id="login" :class="{cursor:buttonDisabled}">
-        <h1>Enter your username and password:</h1>
-        <label for="username">USERNAME:&nbsp;&nbsp;</label>
-        <input id="username"
-               v-model="username"
-               autofocus
-               name="username"
-               type="text"
-               @keydown.enter="login"/>
-        <br/>
-        <br/>
-        <label for="password">PASSWORD:&nbsp;&nbsp;</label>
-        <input id="password"
-               v-model="password"
-               name="password"
-               type="password"
-               @keydown.enter="login"/>
-        <br/>
-        <button :disabled="buttonDisabled" @click="login">LOG IN</button>
-        <p v-if="error" class="error">{{ error }}</p>
-        <router-link :to="{name:'main'}">MAIN MENU</router-link>
+        <form>
+            <h1>Enter your username and password:</h1>
+            <label for="username">USERNAME:&nbsp;&nbsp;</label>
+            <input id="username"
+                   v-model="username"
+                   autocomplete="username"
+                   autofocus
+                   name="username"
+                   type="text"
+                   @keydown.enter="login"/>
+            <br/>
+            <br/>
+            <label for="password">PASSWORD:&nbsp;&nbsp;</label>
+            <input id="password"
+                   v-model="password"
+                   autocomplete="current-password"
+                   name="password"
+                   type="password"
+                   @keydown.enter="login"/>
+            <br/>
+            <button :disabled="buttonDisabled" @click="login">LOG IN</button>
+            <p v-if="error" class="error">{{ error }}</p>
+            <router-link :to="{name:'main'}">MAIN MENU</router-link>
+        </form>
     </section>
 </template>
 
