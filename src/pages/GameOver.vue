@@ -79,8 +79,7 @@ onBeforeRouteLeave(() => {
 <template>
     <div id="gameOver"
          @mouseleave="drop"
-         @mousemove="dragging"
-         @click.self="goToMain">
+         @mousemove="dragging">
         <section id="modal"
                  @mousemove="dragging"
                  @mouseup="drop"
