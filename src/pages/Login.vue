@@ -44,8 +44,8 @@ function login() {
             <label for="username">USERNAME:&nbsp;&nbsp;</label>
             <input id="username"
                    v-model="username"
+                   v-focus
                    autocomplete="username"
-                   autofocus
                    name="username"
                    type="text"
                    @keydown.enter="login"/>
