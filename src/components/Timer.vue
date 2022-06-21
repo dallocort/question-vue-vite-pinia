@@ -25,7 +25,7 @@ watch(currentTime, (newValue) => {
     if (newValue <= 0) {
         clearInterval(interval);
         interval = null;
-        emits('time-is-up', this);//todo šta je this
+        emits('time-is-up');//todo šta je this
     }
 });
 watch(() => props.restart, () => {

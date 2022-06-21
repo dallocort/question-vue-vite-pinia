@@ -156,7 +156,7 @@ function reset() {
     setTimeout(() => {
         emotion.value = 'normal';
         indexOfQuestion.value += 1;
-        restartTimer.value = !restartTimer;
+        restartTimer.value = !restartTimer.value;
         stopTimer.value = false;
         answerCorrect.value = 0;
         blocking.value = false;
@@ -167,6 +167,7 @@ function resetNewLevel() {
     setTimeout(() => {
         emotion.value = 'normal';
         showTimeIsUp.value = false;
+        questionsFetched.value = false;
         showQuestions.value = true;
         indexOfQuestion.value = 0;
         restartTimer.value = !restartTimer.value;
@@ -240,15 +241,18 @@ watch(level, () => {
         <section id="info">
             <p>SCORE: {{ score }}</p>
             <p>QUESTION: {{ indexOfQuestion + 1 }}/5</p>
-            <Timer :restart="restartTimer"
-                   :seconds="seconds"
-                   :stop="stopTimer"
-                   @time-is-up="timeIsUp"></Timer>
-            <Harts :numOfLives.number="numOfLives"></Harts>
+            <Timer
+                v-if="questionsFetched"
+                :restart="restartTimer"
+                :seconds="seconds"
+                :stop="stopTimer"
+                @time-is-up="timeIsUp"/>
+            <Harts :numOfLives.number="numOfLives"/>
         </section>
         <p v-show="showTimeIsUp">Your time is up, one life lost!
         </p>
-        <section v-if="questions.length && showQuestions>0" id="questions">
+        <section v-if="questions.length && showQuestions && questionsFetched"
+                 id="questions">
             <article>
                 <p>{{ questions[indexOfQuestion].question }}</p>
             </article>
@@ -262,6 +266,8 @@ watch(level, () => {
                     {{ answer.attributes.ans_text }}
                 </li>
             </transition-group>
+        </section>
+        <section v-if="!questionsFetched" class="loading">Loading questions...
         </section>
         <p v-if="error">{{ error }}</p>
         <transition name="smiley">
@@ -414,5 +420,10 @@ h1 {
 .questions-enter-to {
     opacity: 1;
     transform: translateX(0);
+}
+
+.loading {
+    margin-top: 25%;
+    font-weight: bold;
 }
 </style>
