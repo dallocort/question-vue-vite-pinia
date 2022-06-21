@@ -22,7 +22,6 @@ function login() {
         if (response.data.status === 'E') {
             throw new Error(response.data.message);
         } else if (response.data.status === 'S') {
-            console.log(response.data);
             sessionStorage.setItem('sid', response.data.sid);
             sessionStorage.setItem('username', response.data.username);
             if (response.data.access === 1) {

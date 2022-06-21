@@ -23,7 +23,7 @@ let score = ref(0);
 let numOfLives = ref(3);
 let showQuestions = ref(true);
 let answerWrong = ref('');
-let answerCorrect = ref(0);
+let answerCorrect = ref(1);
 let blocking = ref(false);
 let seconds = ref(20);
 let correctAnswerArray = ref([]);
@@ -32,13 +32,13 @@ let questionsFetched = ref(false);
 
 function createAllQuestions(lvl) {
     const request = axios.get(
-        `http://739k121.mars-e1.mars-hosting.com/dm_quiz/questions?sid=${sessionStorage.getItem(
-            'sid')}&level=${lvl}`);
+        `https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions?where=[{"attribute":"qst_level","operator":"=","value":"${lvl}"}]`);
     request.then(response => {
-        if (response.data.status === 'E') {
-            throw new Error(response.data.message);
-        } else if (response.data.status === 'S') {
-            allQuestions.value = response.data.data;
+        if (response.data?.errors) {
+            throw new Error(response.data.errors.detail);
+        } else {
+            response.data.data.forEach(
+                el => allQuestions.value.push(el.attributes));
         }
     }).catch(message => error = message);
 }
@@ -47,15 +47,15 @@ function createAnswers() {
     const helperArray = [];
     questions.value.forEach(el => {
         helperArray.push(axios.get(
-            `http://739k121.mars-e1.mars-hosting.com/dm_quiz/answers?sid=${sessionStorage.getItem(
-                'sid')}&qst_id=${el.qst_id}`));
+            `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers?where=[{"attribute":"qst_id","operator":"=","value":"${el.qst_id}"}]`));
     });
     Promise.all(helperArray)
     .then(response => {
         response.forEach(obj => {
             answers.value.push(obj.data.data);
         });
-        answers.value.sort((a, b) => a[0].qst_id - b[0].qst_id);
+        answers.value.sort(
+            (a, b) => a[0].attributes.qst_id - b[0].attributes.qst_id);
         answers.value.forEach((el) => {
             el.sort(() => .5 - Math.random());
         });
@@ -71,8 +71,8 @@ function pickedAnswer(ans_true, ans_id) {
         level: questions.value[indexOfQuestion.value].qst_level,
         correct: ans_true === 1
     });
-    if (ans_true === 1) {
-        answerCorrect.value = 1;
+    if (ans_true === true) {
+        answerCorrect.value = true;
         emotion.value = 'happy';
         if (level.value === 1) {
             calculateScore(10);
@@ -144,7 +144,7 @@ function nextLevel() {
             router.push({
                 name: 'game-over',
                 query: {
-                    score: score + 200,
+                    score: score.value + 200,
                     status: 'W I N !!!!!!!!'
                 }
             });
@@ -224,7 +224,7 @@ watch(allQuestions, () => {
     }
     questions.value.sort((a, b) => a.qst_id - b.qst_id);
     createAnswers();
-});
+}, {deep: true});
 watch(level, () => {
     indexOfQuestion.value = 0;
     questions.value = [];
@@ -255,10 +255,11 @@ watch(level, () => {
             <section v-if="blocking" id="blocking"></section>
             <transition-group v-if="answers.length>0" name="questions" tag="ol">
                 <li v-for="answer in answers[indexOfQuestion]"
-                    :key="answer.ans_id"
-                    :class="['answers',{wrong:answerWrong===answer.ans_id,correct:answerCorrect===answer.ans_true}]"
-                    @click="pickedAnswer(answer.ans_true, answer.ans_id)">
-                    {{ answer.ans_text }}
+                    :key="answer.attributes.ans_id"
+                    :class="['answers',{wrong:answerWrong===answer.attributes.ans_id,correct:answerCorrect===answer.attributes.ans_true}]"
+                    @click="pickedAnswer(answer.attributes.ans_true,
+                    answer.attributes.ans_id)">
+                    {{ answer.attributes.ans_text }}
                 </li>
             </transition-group>
         </section>
