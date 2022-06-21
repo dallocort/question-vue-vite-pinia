@@ -3,7 +3,6 @@ import {computed} from "vue";
 import {useRoute} from 'vue-router';
 
 const route = useRoute();
-let session = sessionStorage.getItem('username');
 const choiceLink = computed(
     () => route.name === 'login' ? 'register' : 'login');
 </script>

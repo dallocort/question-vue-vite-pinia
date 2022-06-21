@@ -26,7 +26,7 @@ function adminPage() {
 
 onMounted(() => {
     const request = axios.get(
-        `http://739k121.mars-e1.mars-hosting.com/dm_quiz/highScores.value?sid=${sessionStorage.getItem(
+        `http://739k121.mars-e1.mars-hosting.com/dm_quiz/highScores?sid=${sessionStorage.getItem(
             'sid')}`);
     request.then(response => {
         if (response?.data?.status === 'E') {
@@ -89,7 +89,7 @@ onMounted(() => {
     font-size: 1.2em;
 }
 
-#highScores.value p {
+#highScores p {
     margin: 0;
     padding: 0 5px 0;
     width: 30%;
@@ -98,7 +98,7 @@ onMounted(() => {
     overflow: hidden;
 }
 
-#highScores.value {
+#highScores {
     width: 95%;
     margin: 35px auto 0;
     display: flex;
