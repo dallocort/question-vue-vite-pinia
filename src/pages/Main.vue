@@ -12,8 +12,8 @@ let error = ref('');
 
 function exitGame() {
     sessionStorage.clear();
-    router.push({name: 'welcome'});
     store.setNotAdmin();
+    router.push({name: 'welcome'});
 }
 
 function goToLevel() {
@@ -25,15 +25,12 @@ function adminPage() {
 }
 
 onMounted(() => {
-    const request = axios.get(
-        `http://739k121.mars-e1.mars-hosting.com/dm_quiz/highScores?sid=${sessionStorage.getItem(
-            'sid')}`);
+    const request = axios.get(`http://739k121.mars-e1.mars-hosting.com/dm_quiz/highScores?sid=${sessionStorage.getItem('sid')}`);
     request.then(response => {
         if (response?.data?.status === 'E') {
             throw new Error(response.data.message);
         } else if (response?.data?.status === 'S') {
-            highScores.value = response.data.data.sort(
-                (a, b) => b.usr_points - a.usr_points);
+            highScores.value = response.data.data.sort((a, b) => b.usr_points - a.usr_points);
         }
     }).catch(message => error.value = message);
 });
