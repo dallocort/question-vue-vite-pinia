@@ -217,16 +217,18 @@ onMounted(() => {
     createAllQuestions(level.value);
 });
 watch(allQuestions, () => {
-    while (questions.value.length !== 5) {
-        let random = Math.floor(Math.random() * allQuestions.value.length);
-        if (!questions.value.includes(allQuestions.value[random])) {
-            questions.value.push(allQuestions.value[random]);
+    if (allQuestions.value.length !== 0) {
+        while (questions.value.length !== 5) {
+            let random = Math.floor(Math.random() * allQuestions.value.length);
+            if (!questions.value.includes(allQuestions.value[random])) {
+                questions.value.push(allQuestions.value[random]);
+            }
         }
+        questions.value.sort((a, b) => a.qst_id - b.qst_id);
+        console.log('---------------------------');
+        questions.value.forEach((el) => console.log(el.question));
+        createAnswers();
     }
-    questions.value.sort((a, b) => a.qst_id - b.qst_id);
-    console.log('---------------------------');
-    questions.value.forEach((el) => console.log(el.question));
-    createAnswers();
 }, {deep: true});
 watch(level, () => {
     indexOfQuestion.value = 0;

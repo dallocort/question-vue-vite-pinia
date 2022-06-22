@@ -14,7 +14,9 @@ const component = shallowRef(NewQuestion);
         <button :disabled="component===DeleteQuestion"
                 @click="component=DeleteQuestion">Delete Question
         </button>
-        <component :is="component"/>
+        <keep-alive>
+            <component :is="component"/>
+        </keep-alive>
         <router-link :to="{name:'main'}">MAIN MENU</router-link>
     </section>
 </template>

@@ -8,13 +8,13 @@ let correctAnswer = ref('');
 let answer2 = ref('');
 let answer3 = ref('');
 let answer4 = ref('');
-let qst_level = ref('1');
+let qst_level = ref(1);
 let info = ref('');
 let buttonDisabled = ref(false);
 
 function addQuestion() {
     buttonDisabled.value = true;
-    if (question.value !== '' && correctAnswer.value !== '' && answer2.value !== '' && answer3.value !== '' && answer4.value !== '' && (qst_level.value === 1 || qst_level.value === 2 || qst_level.value === '2' || qst_level.value === '1')) {
+    if (question.value !== '' && correctAnswer.value !== '' && answer2.value !== '' && answer3.value !== '' && answer4.value !== '' && (qst_level.value === 1 || qst_level.value === 2)) {
         const request = axios.post(
             'http://739k121.mars-e1.mars-hosting.com/inkvizicija/unosPitanja.js',
             {
@@ -49,7 +49,7 @@ function reset() {
     answer2.value = '';
     answer3.value = '';
     answer4.value = '';
-    qst_level.value = '1';
+    qst_level.value = 1;
     question.value = '';
     correctAnswer.value = '';
     setTimeout(() => info.value = '', 3000);
@@ -68,7 +68,7 @@ onBeforeRouteLeave((_to, _from, next) => {
         <h1>CREATE NEW QUESTION</h1>
         <textarea id="question"
                   v-model="question"
-                  autofocus
+                  v-focus
                   cols="30"
                   placeholder="Enter question here..."
                   rows="5"/>
@@ -87,7 +87,7 @@ onBeforeRouteLeave((_to, _from, next) => {
         <br/>
         <label for="qst_level">QUESTION LEVEL:&nbsp;&nbsp;</label>
         <input id="qst_level"
-               v-model="qst_level"
+               v-model.number="qst_level"
                max="2"
                min="1"
                type="number"/>
@@ -111,7 +111,7 @@ label {
 }
 
 label:last-of-type {
-    width: 279px;
+    width: 289px;
 }
 
 button {

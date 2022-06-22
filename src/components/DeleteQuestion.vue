@@ -50,7 +50,7 @@ onMounted(() => {
     createAllQuestions();
 });
 watch(searchText, () => {
-    //without nextTick filteredQuestions will run after this watch, need to wait DOM changes first
+    //why nextTick? When computed property "filteredQuestions" changes, we need to wait for DOM updates, then run WATCH! Because this watch catching DOM elements present on the page.
     nextTick(() => {
         let paragraphs = document.getElementById("listOfQuestions")?.childNodes;
         if (paragraphs) {
@@ -75,7 +75,8 @@ watch(searchText, () => {
 <template>
     <section id="deleteQuestion">
         <label for="one">SEARCH:</label>
-        <input id="one" v-model="searchText" placeholder="search questions"/>
+        <input id="one" v-model="searchText" v-focus
+               placeholder="search questions"/>
         <article v-if="filteredQuestions.length" id="listOfQuestions">
             <p v-for="(question,index) in
             filteredQuestions"
