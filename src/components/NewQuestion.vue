@@ -2,7 +2,9 @@
 import axios from "axios";
 import {ref} from "vue";
 import {onBeforeRouteLeave} from "vue-router";
+import {useStore} from "../store/store.js";
 
+let store = useStore();
 let question = ref('');
 let correctAnswer = ref('');
 let answer2 = ref('');
@@ -27,73 +29,49 @@ async function addQuestion() {
     if (question.value !== '' && correctAnswer.value !== '' && answer2.value !== '' && answer3.value !== '' && answer4.value !== '' && (qst_level.value === 1 || qst_level.value === 2)) {
         try {
             //get max qst_id
-            const requestMAXQid = await axios.get(
-                //if no limit, retrieves only 15 questions
+            const requestMAXQid = await axios.get(//if no limit, retrieves only 15 questions
                 'https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions?limit=100');
             qst_id = requestMAXQid.data.data.reduce(
-                (a, b) => Math.max(a.attributes ? a.attributes.qst_id : a,
-                    b.attributes.qst_id), -Infinity) + 1;
+                (a, b) => Math.max(a.attributes ? a.attributes.qst_id : a, b.attributes.qst_id), -Infinity) + 1;
             //get max ans_id
-            const requestMAXAid = await axios.get(
-                //if no limit, retrieves only some answers
+            const requestMAXAid = await axios.get(//if no limit, retrieves only some answers
                 'https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers?limit=1000');
             ans_id = requestMAXAid.data.data.reduce(
-                (a, b) => Math.max(a.attributes ? a.attributes.ans_id : a,
-                    b.attributes.ans_id), -Infinity) + 1;
-            postedQuestion = await axios.post(
-                'https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions',
-                {
-                    qst_level: qst_level.value,
-                    question: question.value,
-                    qst_id: qst_id
-                });
-            postedAnswer1 = await axios.post(
-                'https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers',
-                {
-                    "ans_id": ans_id,
-                    "ans_text": correctAnswer.value,
-                    "ans_true": true,
-                    "qst_id": qst_id
-                });
-            console.log(postedQuestion, postedAnswer1);
-            postedAnswer2 = await axios.post(
-                'https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers',
-                {
-                    "ans_id": ans_id + 1,
-                    "ans_text": answer2.value,
-                    "ans_true": false,
-                    "qst_id": qst_id
-                });
-            postedAnswer3 = await axios.post(
-                'https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers',
-                {
-                    "ans_id": ans_id + 2,
-                    "ans_text": answer3.value,
-                    "ans_true": false,
-                    "qst_id": qst_id
-                });
-            postedAnswer4 = await axios.post(
-                'https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers',
-                {
-                    "ans_id": ans_id + 3,
-                    "ans_text": answer4.value,
-                    "ans_true": false,
-                    "qst_id": qst_id
-                });
+                (a, b) => Math.max(a.attributes ? a.attributes.ans_id : a, b.attributes.ans_id), -Infinity) + 1;
+            postedQuestion = (await axios.post('https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions', {
+                qst_level: qst_level.value,
+                question: question.value,
+                qst_id: qst_id
+            })).data.data.uid;
+            postedAnswer1 = (await axios.post('https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers', {
+                "ans_id": ans_id,
+                "ans_text": correctAnswer.value,
+                "ans_true": true,
+                "qst_id": qst_id
+            })).data.data.uid;
+            postedAnswer2 = (await axios.post('https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers', {
+                "ans_id": ans_id + 1,
+                "ans_text": answer2.value,
+                "ans_true": false,
+                "qst_id": qst_id
+            })).data.data.uid;
+            postedAnswer3 = (await axios.post('https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers', {
+                "ans_id": ans_id + 2,
+                "ans_text": answer3.value,
+                "ans_true": false,
+                "qst_id": qst_id
+            })).data.data.uid;
+            postedAnswer4 = (await axios.post('https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers', {
+                "ans_id": ans_id + 3,
+                "ans_text": answer4.value,
+                "ans_true": false,
+                "qst_id": qst_id
+            })).data.data.uid;
             info.value = 'Question added successfully!!';
             reset();
             buttonDisabled.value = false;
         } catch (message) {
-            await axios.delete(
-                `https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions/${postedQuestion.data.data.uid}`);
-            await axios.delete(
-                `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers/${postedAnswer1.data.data.uid}`);
-            await axios.delete(
-                `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers/${postedAnswer2.data.data.uid}`);
-            await axios.delete(
-                `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers/${postedAnswer3.data.data.uid}`);
-            await axios.delete(
-                `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers/${postedAnswer4.data.data.uid}`);
+            await store.deleteQuestion(postedQuestion, postedAnswer1, postedAnswer2, postedAnswer3, postedAnswer4);
             buttonDisabled.value = false;
             info.value = message;
         }
