@@ -224,12 +224,15 @@ watch(allQuestions, () => {
         }
     }
     questions.value.sort((a, b) => a.qst_id - b.qst_id);
+    console.log('---------------------------');
+    questions.value.forEach((el) => console.log(el.question));
     createAnswers();
 }, {deep: true});
 watch(level, () => {
     indexOfQuestion.value = 0;
     questions.value = [];
     answers.value = [];
+    allQuestions.value = [];
     createAllQuestions(level.value);
 });
 </script>
