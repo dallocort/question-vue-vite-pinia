@@ -11,37 +11,98 @@ let answer4 = ref('');
 let qst_level = ref(1);
 let info = ref('');
 let buttonDisabled = ref(false);
+let clearTimer;
+let qst_id = null;
+let ans_id = null;
+let postedQuestion = null;
+let postedAnswer1 = null;
+let postedAnswer2 = null;
+let postedAnswer3 = null;
+let postedAnswer4 = null;
 
-function addQuestion() {
+async function addQuestion() {
     buttonDisabled.value = true;
+    //for spamming the button ADD QUESTION
+    clearTimeout(clearTimer);
     if (question.value !== '' && correctAnswer.value !== '' && answer2.value !== '' && answer3.value !== '' && answer4.value !== '' && (qst_level.value === 1 || qst_level.value === 2)) {
-        const request = axios.post(
-            'http://739k121.mars-e1.mars-hosting.com/inkvizicija/unosPitanja.js',
-            {
-                odgovor2: answer2.value,
-                odgovor3: answer3.value,
-                odgovor4: answer4.value,
-                qst_level: Number(qst_level.value),
-                question: question.value,
-                tacanOdgovor: correctAnswer.value
-            });
-        request.then(response => {
-            if (response.status !== 200) {
-                throw new Error(response.data.message);
-            } else {
-                info.value = 'Question added successfully!!';
-                reset();
-                buttonDisabled.value = false;
-            }
-        })
-        .catch(message => {
+        try {
+            //get max qst_id
+            const requestMAXQid = await axios.get(
+                //if no limit, retrieves only 15 questions
+                'https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions?limit=100');
+            qst_id = requestMAXQid.data.data.reduce(
+                (a, b) => Math.max(a.attributes ? a.attributes.qst_id : a,
+                    b.attributes.qst_id), -Infinity) + 1;
+            //get max ans_id
+            const requestMAXAid = await axios.get(
+                //if no limit, retrieves only some answers
+                'https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers?limit=1000');
+            ans_id = requestMAXAid.data.data.reduce(
+                (a, b) => Math.max(a.attributes ? a.attributes.ans_id : a,
+                    b.attributes.ans_id), -Infinity) + 1;
+            postedQuestion = await axios.post(
+                'https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions',
+                {
+                    qst_level: qst_level.value,
+                    question: question.value,
+                    qst_id: qst_id
+                });
+            postedAnswer1 = await axios.post(
+                'https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers',
+                {
+                    "ans_id": ans_id,
+                    "ans_text": correctAnswer.value,
+                    "ans_true": true,
+                    "qst_id": qst_id
+                });
+            console.log(postedQuestion, postedAnswer1);
+            postedAnswer2 = await axios.post(
+                'https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers',
+                {
+                    "ans_id": ans_id + 1,
+                    "ans_text": answer2.value,
+                    "ans_true": false,
+                    "qst_id": qst_id
+                });
+            postedAnswer3 = await axios.post(
+                'https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers',
+                {
+                    "ans_id": ans_id + 2,
+                    "ans_text": answer3.value,
+                    "ans_true": false,
+                    "qst_id": qst_id
+                });
+            postedAnswer4 = await axios.post(
+                'https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers',
+                {
+                    "ans_id": ans_id + 3,
+                    "ans_text": answer4.value,
+                    "ans_true": false,
+                    "qst_id": qst_id
+                });
+            info.value = 'Question added successfully!!';
+            reset();
+            buttonDisabled.value = false;
+        } catch (message) {
+            await axios.delete(
+                `https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions/${postedQuestion.data.data.uid}`);
+            await axios.delete(
+                `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers/${postedAnswer1.data.data.uid}`);
+            await axios.delete(
+                `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers/${postedAnswer2.data.data.uid}`);
+            await axios.delete(
+                `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers/${postedAnswer3.data.data.uid}`);
+            await axios.delete(
+                `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers/${postedAnswer4.data.data.uid}`);
             buttonDisabled.value = false;
             info.value = message;
-        });
+        }
     } else {
+        info.value = 'Please, enter data correctly';
         buttonDisabled.value = false;
-        info.value = 'error, enter data correctly';
-        setTimeout(() => info.value = '', 3000);
+        clearTimer = setTimeout(() => {
+            info.value = '';
+        }, 3000);
     }
 }
 
@@ -126,7 +187,6 @@ textarea {
 }
 
 .info {
-    text-transform: uppercase;
     color: #d5ca16;
     font-size: 1.1em;
 }
