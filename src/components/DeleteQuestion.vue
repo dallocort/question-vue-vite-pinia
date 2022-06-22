@@ -10,6 +10,7 @@ let searchText = ref('');
 let showQuestions = ref(false);
 
 function createAllQuestions() {
+    questions.value = [];
     showQuestions.value = false;
     const request = axios.get(`https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions?limit=100`);
     request.then(response => {
@@ -47,8 +48,6 @@ function deleteQuestion(id, uid) {
 }
 
 const filteredQuestions = computed(() => {
-    console.log('computed run');
-    console.log('question', questions.value);
     // to respond only on the second character >2
     if (searchText.value.length >= 1) {
         return questions.value.filter(qst => qst.question.toLowerCase().includes(searchText.value.toLowerCase()));
@@ -86,6 +85,7 @@ watch(searchText, () => {
         <label for="one">SEARCH:</label>
         <input id="one" v-model="searchText" v-focus
                placeholder="search questions"/>
+        <button @click="createAllQuestions">REFRESH</button>
         <article v-if="filteredQuestions.length" id="listOfQuestions">
             <p v-for="(question,index) in filteredQuestions" :key="question.qst_id"
                @click="deleteQuestion(question.qst_id,question.uid)">
