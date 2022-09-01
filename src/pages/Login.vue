@@ -7,45 +7,47 @@ import {useStore} from "../store/store.js";
 const store = useStore();
 const router = useRouter();
 let error = ref('');
-let username = ref("");
+let email = ref("");
 let password = ref("");
 let buttonDisabled = ref(false);
 
-function login() {
-    buttonDisabled.value = true;
-    const request = axios.post(
-        'http://739k121.mars-e1.mars-hosting.com/dm_quiz/login', {
-            "username": username.value,
+async function login() {
+    try {
+        buttonDisabled.value = true;
+        const logInResponse = await axios.post('https://dacha-questions.api.deskree.com/api/v1/auth/accounts/sign-in/email', {
+            "email": email.value,
             "password": password.value
         });
-    request.then(response => {
-        if (response.data.status === 'E') {
-            throw new Error(response.data.message);
-        } else if (response.data.status === 'S') {
-            sessionStorage.setItem('sid', response.data.sid);
-            sessionStorage.setItem('username', response.data.username);
-            if (response.data.access === 1) {
-                store.setIsAdmin();
-            }
-            router.push({name: 'main'});
+        store.setIsAuthenticated();
+        const idToken = logInResponse.data.data.idToken;
+        const getUserInfoResponse = await axios.get(
+            `https://dacha-questions.api.deskree.com/api/v1/rest/collections/users/${logInResponse.data.data.uid}`, {
+                headers: {
+                    'Authorization': 'Bearer ' + idToken
+                }
+            });
+        if (getUserInfoResponse.data.data.roles.includes("ADMIN")) {
+            store.setIsAdmin();
         }
-    }).catch(message => {
+        await router.push({name: 'main'});
+    } catch (message) {
+        console.log(message);
         buttonDisabled.value = false;
-        error.value = message;
-    });
+        error.value = message.response.data.errors.errors[0].detail;
+    }
 }
 </script>
 
 <template>
     <section id="login" :class="{cursor:buttonDisabled}">
         <form>
-            <h1>Enter your username and password:</h1>
-            <label for="username">USERNAME:&nbsp;&nbsp;</label>
-            <input id="username"
-                   v-model="username"
+            <h1>Enter your email and password:</h1>
+            <label for="email">EMAIL:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+            <input id="email"
+                   v-model="email"
                    v-focus
-                   autocomplete="username"
-                   name="username"
+                   autocomplete="email"
+                   name="email"
                    type="text"
                    @keydown.enter="login"/>
             <br/>

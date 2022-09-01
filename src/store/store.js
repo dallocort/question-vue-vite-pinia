@@ -3,8 +3,9 @@ import { defineStore } from "pinia";
 
 export const useStore = defineStore("question", {
   state: () => ({
+    isAuthenticated: false,
     isGameOver: false,
-    isAdmin: true,
+    isAdmin: false,
   }),
   actions: {
     setGameIsOver() {
@@ -15,6 +16,9 @@ export const useStore = defineStore("question", {
     },
     setIsAdmin() {
       this.isAdmin = true;
+    },
+    setIsAuthenticated() {
+      this.isAuthenticated = true;
     },
     setNotAdmin() {
       this.isAdmin = false;

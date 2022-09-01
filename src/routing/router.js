@@ -97,11 +97,12 @@ const router = createRouter({
   ],
 });
 router.beforeEach((to, _from, next) => {
+  const store = useStore();
   if (to.path.startsWith("/choice")) {
     next();
     return;
   }
-  if (sessionStorage.getItem("username") && sessionStorage.getItem("sid")) {
+  if (store.isAuthenticated) {
     next();
   } else {
     if (to.path === "/") {
