@@ -35,7 +35,7 @@ function deleteQuestion(id, uid) {
         let helperResponse;
         const answers = [];
         helperResponse = axios.get(
-            `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers?where=[{"attribute":"qst_id","operator":"=","value":"${id}"}]`);
+            `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers?where=[{"attribute":"qst_id","operator":"=","value":${id}}]`);
         helperResponse.then(res => {
             res.data.data.forEach(el => answers.push(el.uid));
             store.deleteQuestion(uid, answers[0], answers[1], answers[2], answers[3]).then(() => {

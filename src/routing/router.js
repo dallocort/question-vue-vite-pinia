@@ -25,6 +25,7 @@ const router = createRouter({
       component: () => import("../pages/Choice.vue"),
       beforeEnter(to, _from, next) {
         if (
+          //todo save loged user to session so after refresh still logged
           sessionStorage.getItem("username") &&
           sessionStorage.getItem("sid")
         ) {
@@ -66,11 +67,7 @@ const router = createRouter({
       component: () => import("../pages/Admin.vue"),
       beforeEnter(_to, _from, next) {
         const store = useStore();
-        if (
-          sessionStorage.getItem("username") &&
-          sessionStorage.getItem("sid") &&
-          store.isAdmin
-        ) {
+        if (store.isAdmin) {
           next();
         } else {
           next("/main");

@@ -5,35 +5,32 @@ import {onBeforeRouteLeave, useRouter} from "vue-router";
 
 const router = useRouter();
 let error = ref('');
-let username = ref("");
+let email = ref("");
 let password = ref("");
 let buttonDisabled = ref(false);
 
-function register() {
+function register(e) {
     buttonDisabled.value = true;
     if (validate()) {
-        const request = axios.post(
-            'http://739k121.mars-e1.mars-hosting.com/dm_quiz/register', {
-                "username": username.value,
-                "password": password.value
-            });
+        const request = axios.post('https://dacha-questions.api.deskree.com/api/v1/auth/accounts/signup', {
+            "email": email.value,
+            "password": password.value
+        });
         request.then(response => {
-            if (response.data.status === 'E') {
-                throw new Error(response.data.message);
-            } else if (response.data.status === 'S') {
+            if (response.data.data) {
                 router.push({name: 'login'});
             }
         }).catch(message => {
             buttonDisabled.value = false;
-            error.value = message;
+            console.log(message);
+            error.value = message.response.data.errors.errors[0].detail;
         });
     }
 }
 
 function validate() {
     error.value = '';
-    if (username.value && password.value && username.value.includes(
-        ' ') === false && password.value.includes(' ') === false) {
+    if (email.value && password.value && email.value.includes(' ') === false && password.value.includes(' ') === false) {
         return true;
     } else {
         error.value = 'enter correct data';
@@ -51,12 +48,12 @@ onBeforeRouteLeave(() => {
     <section id="register" :class="{cursor:buttonDisabled}">
         <form>
             <h1>Create new account:</h1>
-            <label for="username">USERNAME:&nbsp;&nbsp;</label>
-            <input id="username"
-                   v-model="username"
+            <label for="email">EMAIL:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+            <input id="email"
+                   v-model="email"
                    v-focus
-                   autocomplete="username"
-                   name="username"
+                   autocomplete="email"
+                   name="email"
                    type="text"
                    @keydown.enter="register"/>
             <br/>
@@ -69,7 +66,7 @@ onBeforeRouteLeave(() => {
                    type="password"
                    @keydown.enter="register"/>
             <br/>
-            <button :disabled="buttonDisabled" @click="register">CREATE ACCOUNT
+            <button :disabled="buttonDisabled" @click.prevent="register">CREATE ACCOUNT
             </button>
             <p v-if="error" class="error">{{ error }}</p>
             <router-link :to="{name:'main'}">MAIN MENU</router-link>

@@ -19,11 +19,11 @@ async function login() {
             "password": password.value
         });
         store.setIsAuthenticated();
-        const idToken = logInResponse.data.data.idToken;
+        store.idToken = logInResponse.data.data.idToken;
         const getUserInfoResponse = await axios.get(
             `https://dacha-questions.api.deskree.com/api/v1/rest/collections/users/${logInResponse.data.data.uid}`, {
                 headers: {
-                    'Authorization': 'Bearer ' + idToken
+                    'Authorization': 'Bearer ' + store.idToken
                 }
             });
         if (getUserInfoResponse.data.data.roles.includes("ADMIN")) {

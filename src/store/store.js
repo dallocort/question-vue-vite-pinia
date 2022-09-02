@@ -6,6 +6,7 @@ export const useStore = defineStore("question", {
     isAuthenticated: false,
     isGameOver: false,
     isAdmin: false,
+    idToken: "",
   }),
   actions: {
     setGameIsOver() {
@@ -20,8 +21,11 @@ export const useStore = defineStore("question", {
     setIsAuthenticated() {
       this.isAuthenticated = true;
     },
-    setNotAdmin() {
+    clearStore() {
+      this.isAuthenticated = false;
+      this.isGameOver = false;
       this.isAdmin = false;
+      this.idToken = "";
     },
     async deleteQuestion(
       postedQuestion,

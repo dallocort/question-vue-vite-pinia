@@ -32,13 +32,17 @@ let questionsFetched = ref(false);
 
 function createAllQuestions(lvl) {
     const request = axios.get(
-        `https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions?where=[{"attribute":"qst_level","operator":"=","value":"${lvl}"}]`);
+        `https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions?where=[{"attribute":"qst_level","operator":"=","value":${lvl}}]`,
+        {
+            headers: {
+                'Authorization': 'Bearer ' + store.idToken
+            }
+        });
     request.then(response => {
         if (response.data?.errors) {
             throw new Error(response.data.errors.detail);
         } else {
-            response.data.data.forEach(
-                el => allQuestions.value.push(el.attributes));
+            response.data.data.forEach(el => allQuestions.value.push(el.attributes));
         }
     }).catch(message => error = message);
 }
@@ -47,15 +51,19 @@ function createAnswers() {
     const helperArray = [];
     questions.value.forEach(el => {
         helperArray.push(axios.get(
-            `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers?where=[{"attribute":"qst_id","operator":"=","value":"${el.qst_id}"}]`));
+            `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers?where=[{"attribute":"qst_id","operator":"=","value":${el.qst_id}}]`,
+            {
+                headers: {
+                    'Authorization': 'Bearer ' + store.idToken
+                }
+            }));
     });
     Promise.all(helperArray)
     .then(response => {
         response.forEach(obj => {
             answers.value.push(obj.data.data);
         });
-        answers.value.sort(
-            (a, b) => a[0].attributes.qst_id - b[0].attributes.qst_id);
+        answers.value.sort((a, b) => a[0].attributes.qst_id - b[0].attributes.qst_id);
         answers.value.forEach((el) => {
             el.sort(() => .5 - Math.random());
         });
@@ -124,8 +132,7 @@ function pickedAnswer(ans_true, ans_id) {
 function addBonus() {
     if (correctAnswerArray.value[correctAnswerArray.value.length - 1].correct && correctAnswerArray.value[correctAnswerArray.value.length - 2].correct && correctAnswerArray.value[correctAnswerArray.value.length - 3].correct) {
         for (let i = 1; i <= 3; i++) {
-            correctAnswerArray.value[correctAnswerArray.value.length - i].level === 1 ?
-                calculateScore(10) : calculateScore(20);
+            correctAnswerArray.value[correctAnswerArray.value.length - i].level === 1 ? calculateScore(10) : calculateScore(20);
         }
         //to break the array of correct answers
         correctAnswerArray.value.push({
