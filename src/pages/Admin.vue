@@ -1,5 +1,6 @@
 <script setup>
 import {shallowRef} from "vue";
+import Button from "../components/Button.vue";
 import DeleteQuestion from '../components/DeleteQuestion.vue';
 import NewQuestion from '../components/NewQuestion.vue';
 
@@ -8,12 +9,10 @@ const component = shallowRef(NewQuestion);
 
 <template>
     <section id="admin">
-        <button :disabled="component===NewQuestion"
-                @click="component=NewQuestion">New Question
-        </button>
-        <button :disabled="component===DeleteQuestion"
-                @click="component=DeleteQuestion">Delete Question
-        </button>
+        <Button :disabled="component===NewQuestion"
+                btnText="NEW QUESTION" spanText="18px" @click="component=NewQuestion"></Button>
+        <Button :disabled="component===DeleteQuestion"
+                btnText="DEL. QUESTION" spanText="18px" @click="component=DeleteQuestion"></Button>
         <keep-alive>
             <component :is="component"/>
         </keep-alive>
@@ -24,10 +23,10 @@ const component = shallowRef(NewQuestion);
 <style scoped>
 #admin {
     width: 495px;
-    margin: 10vh auto 50px;
+    margin: 4vh auto 4vh;
     background: rgba(229, 241, 255, 0.2);
-    padding: 1px 1px 1px;
     position: relative;
+    padding: 22px 1px 1px;
 }
 
 #admin a:last-child {
@@ -39,8 +38,7 @@ const component = shallowRef(NewQuestion);
 }
 
 button {
-    height: 27px;
-    text-transform: uppercase;
-    margin: 5px;
+    scale: 0.7;
 }
+
 </style>

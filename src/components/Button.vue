@@ -1,14 +1,19 @@
 <script setup>
+
 defineProps({
     btnText: {
         type: String,
         required: true
-    }
+    },
+    spanText: {
+        type: String,
+        default: '22px'
+    },
 });
 </script>
 
 <template>
-    <button class="contact-fp-wrap">
+    <button class="contact-fp-wrap" v-bind="$attrs">
         <svg height="60" width="320" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <linearGradient id="logo-gradient" x1="50%" x2="75%" y1="0%" y2="100%">
@@ -58,7 +63,7 @@ defineProps({
 
 .btn-text {
     font-family: 'Poppins', sans-serif;
-    font-size: 17px;
+    font-size: v-bind('spanText');
     letter-spacing: 3px;
     font-weight: 600;
     position: absolute;
@@ -68,8 +73,8 @@ defineProps({
     height: 60px;
     line-height: 60px;
     background: linear-gradient(45deg, red, yellow);
-    background-clip: text;
     -webkit-background-clip: text;
+    background-clip: text;
     color: transparent;
 }
 </style>

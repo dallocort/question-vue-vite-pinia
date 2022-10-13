@@ -1,6 +1,7 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import {useRouter} from "vue-router";
+import Button from "../components/Button.vue";
 import {useStore} from "../store/store.js";
 
 const store = useStore();
@@ -39,15 +40,9 @@ onMounted(() => {
 <template>
     <section id="main">
         <h1>Welcome {{ user }} </h1>
-        <button @click="goToLevel">
-            NEW GAME
-        </button>
-        <button @click="exitGame">
-            EXIT GAME
-        </button>
-        <button v-if="store.isAdmin" @click="adminPage">
-            ADMIN
-        </button>
+        <Button btnText="NEW GAME" @click="goToLevel"></Button>
+        <Button btnText="EXIT GAME" @click="exitGame"></Button>
+        <Button btnText="ADMIN" @click="adminPage"></Button>
         <p v-if="error" style="color:red">{{ error }}</p>
         <section v-if="highScores" id="highScores">
             <p style="font-weight: bold;">NAME</p>
@@ -80,10 +75,7 @@ onMounted(() => {
 }
 
 #main button {
-    margin: 5px 5px 0;
-    width: 130px;
-    height: 40px;
-    font-size: 1.2em;
+    scale: 0.7;
 }
 
 #highScores p {

@@ -2,6 +2,7 @@
 import axios from "axios";
 import {ref} from "vue";
 import {useRouter} from "vue-router";
+import Button from "../components/Button.vue";
 import {useStore} from "../store/store.js";
 
 const store = useStore();
@@ -59,8 +60,7 @@ async function login() {
                    name="password"
                    type="password"
                    @keydown.enter="login"/>
-            <br/>
-            <button :disabled="buttonDisabled" @click="login">LOG IN</button>
+            <Button :disabled="buttonDisabled" btnText="LOG IN" style="scale: 0.7" @click="login"></Button>
             <p v-if="error" class="error">{{ error }}</p>
             <router-link :to="{name:'main'}">MAIN MENU</router-link>
         </form>
@@ -70,7 +70,6 @@ async function login() {
 <style scoped>
 #login {
     width: 495px;
-    height: 280px;
     margin: 10vh auto 0;
     background: rgba(229, 241, 255, 0.2);
     padding: 1px;
@@ -103,14 +102,11 @@ h1 {
     font-size: 1.2em;
 }
 
-button {
-    width: 150px;
-    height: 40px;
-    margin-top: 24px;
-    font-weight: bold;
+#password {
+    margin-bottom: 20px;
 }
 
 .error {
-    color: red;
+    color: #a20505;
 }
 </style>
