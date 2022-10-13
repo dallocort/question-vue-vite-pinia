@@ -1,6 +1,6 @@
-# Vue 3 + Vite + Pinia
+# Vue 3 + Vite + Pinia + Vue Router
 
-This is question game (serbian language) made with Vue 3, Vite and Pinia.
+This is question game (serbian language) made with Vue 3, Vue Router, Vite and Pinia.
 
 At first screen please register (just enter fake email and pass)
 
