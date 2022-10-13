@@ -1,10 +1,10 @@
 # Vue 3 + Vite + Pinia
 
-This is question game (question are in serbian language) made with Vue 3, Vite and Pinia.
+This is question game (serbian language) made with Vue 3, Vite and Pinia.
 
-At first screen please register (just enter fake email an pass)
+At first screen please register (just enter fake email and pass)
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+[enter game](https://inquisitive-melomakarona-7fbcf3.netlify.app/) 
 
 
 
