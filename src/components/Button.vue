@@ -9,11 +9,15 @@ defineProps({
         type: String,
         default: '22px'
     },
+    disabled: {
+        type: Boolean,
+        default: false
+    }
 });
 </script>
 
 <template>
-    <button class="contact-fp-wrap" v-bind="$attrs">
+    <button :disabled="disabled" class="my-button" v-bind="$attrs">
         <svg height="60" width="320" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <linearGradient id="logo-gradient" x1="50%" x2="75%" y1="0%" y2="100%">
@@ -36,13 +40,13 @@ defineProps({
             </defs>
             <rect class="btn" height="60" rx="30" ry="30" width="220"/>
         </svg>
-        <span class="btn-text">{{ btnText }}</span>
+        <span class="btn-text">{{ disabled ? "please wait..." : btnText }}</span>
     </button>
 </template>
 
 <style scoped>
 
-.contact-fp-wrap {
+.my-button {
     height: 60px;
     position: relative;
     width: 220px;
