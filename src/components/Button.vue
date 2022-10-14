@@ -1,5 +1,8 @@
 <script setup>
+import {computed} from "vue";
+import {useRoute} from 'vue-router';
 
+const route = useRoute();
 defineProps({
     btnText: {
         type: String,
@@ -14,10 +17,11 @@ defineProps({
         default: false
     }
 });
+const routeBtn = computed(() => route.name);
 </script>
 
 <template>
-    <button :disabled="disabled" class="my-button" v-bind="$attrs">
+    <button :class="{visibleBtn:routeBtn==='admin'&&disabled}" :disabled="disabled" class="my-button" v-bind="$attrs">
         <svg height="60" width="320" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <linearGradient id="logo-gradient" x1="50%" x2="75%" y1="0%" y2="100%">
@@ -80,5 +84,9 @@ defineProps({
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+}
+
+.visibleBtn {
+    visibility: hidden;
 }
 </style>

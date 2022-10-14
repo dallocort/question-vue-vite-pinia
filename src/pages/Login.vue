@@ -34,7 +34,7 @@ async function login() {
     } catch (message) {
         console.log(message);
         buttonDisabled.value = false;
-        error.value = message.response.data.errors.errors[0].detail;
+        error.value = message.response?.data.errors.errors[0].detail;
     }
 }
 </script>
