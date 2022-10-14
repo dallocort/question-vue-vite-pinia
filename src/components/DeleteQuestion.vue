@@ -21,6 +21,7 @@ function createAllQuestions() {
                 el.attributes.uid = el.uid;
                 questions.value.push(el.attributes);
             });
+            console.log(questions);
             showQuestions.value = true;
         }
     }).catch(message => info.value = message);

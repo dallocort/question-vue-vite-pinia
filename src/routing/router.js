@@ -25,7 +25,7 @@ const router = createRouter({
       component: () => import("../pages/Choice.vue"),
       beforeEnter(to, _from, next) {
         if (
-          //todo save loged user to session so after refresh still logged
+          //todo save logged user to session so after refresh still logged
           sessionStorage.getItem("username") &&
           sessionStorage.getItem("sid")
         ) {

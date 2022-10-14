@@ -3,6 +3,7 @@ import axios from "axios";
 import {ref} from "vue";
 import {onBeforeRouteLeave} from "vue-router";
 import {useStore} from "../store/store.js";
+import Button from "./Button.vue";
 
 let store = useStore();
 let question = ref('');
@@ -131,8 +132,8 @@ onBeforeRouteLeave((_to, _from, next) => {
                min="1"
                type="number"/>
         <br/>
-        <button :disabled="buttonDisabled" @click="addQuestion">ADD QUESTION
-        </button>
+        <Button :disabled="buttonDisabled" btn-text="ADD QUESTION" span-text="19px" style="scale: .6"
+                @click="addQuestion"></Button>
         <p v-if="info" class="info">{{ info }}</p>
     </section>
 </template>

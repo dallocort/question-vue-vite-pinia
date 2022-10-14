@@ -27,9 +27,10 @@ async function login() {
                     'Authorization': 'Bearer ' + store.idToken
                 }
             });
-        if (getUserInfoResponse.data.data.roles.includes("ADMIN")) {
-            store.setIsAdmin();
-        }
+        //if (getUserInfoResponse.data.data.roles.includes("ADMIN")) {
+        //    store.setIsAdmin();
+        //} because of CV check all all are ADMINS
+        store.setIsAdmin();
         await router.push({name: 'main'});
     } catch (message) {
         console.log(message);

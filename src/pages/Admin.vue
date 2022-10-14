@@ -12,7 +12,7 @@ const component = shallowRef(NewQuestion);
         <Button :disabled="component===NewQuestion"
                 btnText="NEW QUESTION" spanText="18px" @click="component=NewQuestion"></Button>
         <Button :disabled="component===DeleteQuestion"
-                btnText="DEL. QUESTION" spanText="18px" @click="component=DeleteQuestion"></Button>
+                btnText="ALL QUESTIONS" spanText="18px" @click="component=DeleteQuestion"></Button>
         <keep-alive>
             <component :is="component"/>
         </keep-alive>
