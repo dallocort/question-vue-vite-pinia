@@ -45,7 +45,7 @@ const routeBtn = computed(() => route.name);
             </defs>
             <rect class="btn" height="60" rx="30" ry="30" width="220"/>
         </svg>
-        <span class="btn-text">{{ disabled ? "please wait..." : btnText }}</span>
+        <span class="btn-text">{{ disabled ? (routeBtn === 'admin' ? btnText : "please wait...") : btnText }}</span>
     </button>
 </template>
 
@@ -88,6 +88,14 @@ const routeBtn = computed(() => route.name);
 }
 
 .visibleBtn {
+    cursor: unset;
+}
+
+.visibleBtn .btn-text {
+    color: #9a8c8c;
+}
+
+.visibleBtn svg {
     visibility: hidden;
 }
 </style>
