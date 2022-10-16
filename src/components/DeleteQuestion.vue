@@ -2,6 +2,7 @@
 import axios from "axios";
 import {computed, nextTick, onMounted, ref, watch} from "vue";
 import {useStore} from "../store/store.js";
+import Button from "./Button.vue";
 
 const store = useStore();
 let questions = ref([]);
@@ -86,7 +87,7 @@ watch(searchText, () => {
         <label for="one">SEARCH:</label>
         <input id="one" v-model="searchText" v-focus
                placeholder="search questions"/>
-        <button @click="createAllQuestions">REFRESH</button>
+        <button @click="createAllQuestions">REFRESH QUESTIONS</button>
         <article v-if="filteredQuestions.length" id="listOfQuestions">
             <p v-for="(question,index) in filteredQuestions" :key="question.qst_id"
                @click="deleteQuestion(question.qst_id,question.uid)">
@@ -102,7 +103,11 @@ watch(searchText, () => {
 
 <style scoped>
 #deleteQuestion {
-    margin: 10px 0 20px;
+    /* margin: 10px 0 20px; */
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 .info {
@@ -114,19 +119,19 @@ watch(searchText, () => {
 #listOfQuestions {
     overflow: auto;
     height: 70vh;
+    margin-top: 10px;
+    border-top: 1px solid #bab9b9;
+    border-bottom: 1px solid #bab9b9;
     position: relative;
 }
 
 label {
-    display: inline-block;
-    width: 100px;
-    text-align: left;
+    width: 71px;
+    font-size: 13px;
 }
 
 input {
-    width: 260px;
     height: 25px;
-    font-size: 1.1em;
 }
 
 article p {
@@ -136,6 +141,7 @@ article p {
     padding: 0 10px 0 40px;
     cursor: pointer;
     text-indent: -20px;
+    position: relative;
 }
 
 article p:hover {
@@ -147,5 +153,12 @@ article p:hover::before {
     position: absolute;
     left: 18px;
     color: red;
+    top: -2px;
+}
+
+button {
+    margin: 5px;
+    border-radius: 5px;
+    border-color: transparent;
 }
 </style>
