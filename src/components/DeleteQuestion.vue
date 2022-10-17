@@ -74,7 +74,9 @@ watch(searchText, () => {
             if (searchText.value !== "") {
                 let re = new RegExp(searchText.value, "gi");
                 paragraphs.forEach((p) => {
-                    p.innerHTML = p?.innerHTML?.replace(re, (match) => `<mark>${match}</mark>`);
+                    p.innerHTML = p?.textContent?.slice(0, 12) + p?.textContent?.slice(12)
+                    ?.replace(re, (match) => `<mark>${match}</mark>`);
+                    console.log(p);
                 });
             }
         }
@@ -89,10 +91,18 @@ watch(searchText, () => {
                placeholder="search questions"/>
         <button @click="createAllQuestions">REFRESH QUESTIONS</button>
         <article v-if="filteredQuestions.length" id="listOfQuestions">
-            <p v-for="(question,index) in filteredQuestions" :key="question.qst_id"
-               @click="deleteQuestion(question.qst_id,question.uid)">
-                {{ index + 1 }}. {{ question.question }}
-            </p>
+            <template v-for="(question,index) in filteredQuestions" :key="question.qst_id">
+                <p v-if="question.qst_level===1"
+                   @click="deleteQuestion(question.qst_id,question.uid)">
+                    {{ index + 1 }}. LEVEL: {{ question.qst_level }}&nbsp;&nbsp; {{ question.question }}
+                </p>
+            </template>
+            <template v-for="(question,index) in filteredQuestions" :key="question.qst_id">
+                <p v-if="question.qst_level===2"
+                   @click="deleteQuestion(question.qst_id,question.uid)">
+                    {{ index + 1 }}. LEVEL: {{ question.qst_level }}&nbsp;&nbsp; {{ question.question }}
+                </p>
+            </template>
         </article>
         <p v-if="info" class="info">{{ info }}</p>
     </section>
