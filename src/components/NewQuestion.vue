@@ -30,15 +30,22 @@ async function addQuestion() {
     if (question.value !== '' && correctAnswer.value !== '' && answer2.value !== '' && answer3.value !== '' && answer4.value !== '' && (qst_level.value === 1 || qst_level.value === 2)) {
         try {
             //get max qst_id
-            const requestMAXQid = await axios.get(//if no limit, retrieves only 15 questions
+            const first100Questions = await axios.get(//if no limit, it retrieves only 15 questions
                 'https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions?limit=100');
-            qst_id = requestMAXQid.data.data.reduce(
+            qst_id = first100Questions.data.data.reduce(
                 (a, b) => Math.max(a.attributes ? a.attributes.qst_id : a, b.attributes.qst_id), -Infinity) + 1;
+            if (qst_id === -Infinity) {
+                qst_id = 1;
+            }
             //get max ans_id
-            const requestMAXAid = await axios.get(//if no limit, retrieves only some answers
+            const first100Answers = await axios.get(//if no limit, retrieves only some answers
                 'https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers?limit=1000');
-            ans_id = requestMAXAid.data.data.reduce(
+            ans_id = first100Answers.data.data.reduce(
                 (a, b) => Math.max(a.attributes ? a.attributes.ans_id : a, b.attributes.ans_id), -Infinity) + 1;
+            if (ans_id === -Infinity) {
+                ans_id = 1;
+            }
+            console.log("ANS ID NEXT", ans_id);
             postedQuestion = (await axios.post('https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions', {
                 qst_level: qst_level.value,
                 question: question.value,
@@ -92,7 +99,7 @@ function reset() {
     qst_level.value = 1;
     question.value = '';
     correctAnswer.value = '';
-    setTimeout(() => info.value = '', 3000);
+    setTimeout(() => info.value = '', 7000);
 }
 
 onBeforeRouteLeave((_to, _from, next) => {

@@ -21,7 +21,9 @@ const routeBtn = computed(() => route.name);
 </script>
 
 <template>
-    <button :class="{visibleBtn:routeBtn==='admin'&&disabled && btnText!=='ADD QUESTION'}" :disabled="disabled" class="my-button"
+    <button :class="{visibleBtn:routeBtn==='admin'&& disabled && (btnText!=='ADD QUESTION' && btnText!=='RESTORE QUESTIONS')}"
+            :disabled="disabled"
+            class="my-button"
             v-bind="$attrs">
         <svg height="60" width="320" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -45,7 +47,10 @@ const routeBtn = computed(() => route.name);
             </defs>
             <rect class="btn" height="60" rx="30" ry="30" width="220"/>
         </svg>
-        <span class="btn-text">{{ disabled ? (routeBtn === 'admin' ? btnText : "please wait...") : btnText }}</span>
+        <span class="btn-text">{{ disabled ?
+            (routeBtn === 'admin' && (btnText !== 'ADD QUESTION' && btnText !== 'RESTORE QUESTIONS') ? btnText :
+                "please wait...") : btnText }}
+        </span>
     </button>
 </template>
 
