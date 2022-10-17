@@ -90,6 +90,7 @@ watch(searchText, () => {
         <label for="one">SEARCH:</label>
         <input id="one" v-model="searchText" v-focus
                placeholder="search questions"/>
+        <button v-if="searchText" id="delete" @click="searchText=''">❌</button>
         <button @click="createAllQuestions">REFRESH QUESTIONS</button>
         <article v-if="filteredQuestions.length" id="listOfQuestions">
             <template v-for="(question,index) in filteredQuestions" :key="question.qst_id">
@@ -119,6 +120,15 @@ watch(searchText, () => {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
+}
+
+#delete {
+    background-color: transparent;
+    border: none;
+    position: absolute;
+    top: 87px;
+    left: 210px;
+    cursor: pointer;
 }
 
 .info {
