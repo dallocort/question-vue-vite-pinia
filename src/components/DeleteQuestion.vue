@@ -72,7 +72,8 @@ watch(searchText, () => {
                 p.innerHTML = p?.innerHTML?.replace(re2, '');
             });
             if (searchText.value !== "") {
-                let re = new RegExp(searchText.value, "gi");
+                //to avoid invalid characters in your expression you should escape it (like ?) make \\?
+                let re = new RegExp(searchText.value.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1"), "gi");
                 paragraphs.forEach((p) => {
                     p.innerHTML = p?.textContent?.slice(0, 12) + p?.textContent?.slice(12)
                     ?.replace(re, (match) => `<mark>${match}</mark>`);
