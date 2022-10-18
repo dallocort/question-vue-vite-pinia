@@ -30,6 +30,7 @@ let correctAnswerArray = ref([]);
 let emotion = ref('normal');
 let questionsFetched = ref(false);
 
+//todo if less then 5 question lvl 1 app freezes, do info to add more question min 5 lvl 1 and 5 lvl 2
 function createAllQuestions(lvl) {
     const request = axios.get(
         `https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions?where=[{"attribute":"qst_level","operator":"=","value":${lvl}}]`,
