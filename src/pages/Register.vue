@@ -2,6 +2,7 @@
 import axios from "axios";
 import {ref} from "vue";
 import {onBeforeRouteLeave, useRouter} from "vue-router";
+import Button from "../components/Button.vue";
 
 const router = useRouter();
 let error = ref('');
@@ -66,8 +67,8 @@ onBeforeRouteLeave(() => {
                    type="password"
                    @keydown.enter="register"/>
             <br/>
-            <button :disabled="buttonDisabled" @click.prevent="register">CREATE ACCOUNT
-            </button>
+            <Button :disabled="buttonDisabled" btn-text="REGISTER" span-text="22px" style="scale: .7"
+                    @click.prevent="register"></Button>
             <p v-if="error" class="error">{{ error }}</p>
             <router-link :to="{name:'main'}">MAIN MENU</router-link>
         </form>
@@ -77,16 +78,19 @@ onBeforeRouteLeave(() => {
 <style scoped>
 #register {
     width: 495px;
-    height: 280px;
     margin: 10vh auto 0;
     background-color: rgba(180, 76, 174, 0.5);
-    color: #f5ac23;
     padding: 1px;
     position: relative;
+    border-radius: 10px;
 }
 
 #register.cursor, #register.cursor button {
     cursor: progress;
+}
+
+#password {
+    margin-bottom: 20px;
 }
 
 #register a:last-child {
@@ -95,6 +99,7 @@ onBeforeRouteLeave(() => {
     top: 0;
     padding: 5px;
     text-decoration: none;
+    color: #ff9900;
 }
 
 label {
@@ -119,6 +124,7 @@ button {
 }
 
 .error {
-    color: red;
+    color: #2f1e1e;
+    margin: 0;
 }
 </style>

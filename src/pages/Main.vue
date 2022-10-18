@@ -24,7 +24,6 @@ function adminPage() {
     router.push({name: 'admin'});
 }
 
-//todo better style main menu register and login button
 onMounted(() => {
     //todo score database
     //const request = axios.get(`http://739k121.mars-e1.mars-hosting.com/dm_quiz/highScores?sid=${sessionStorage.getItem('sid')}`);

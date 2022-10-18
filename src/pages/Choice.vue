@@ -3,8 +3,7 @@ import {computed} from "vue";
 import {useRoute} from 'vue-router';
 
 const route = useRoute();
-const choiceLink = computed(
-    () => route.name === 'login' ? 'register' : 'login');
+const choiceLink = computed(() => route.name === 'login' ? 'register' : 'login');
 </script>
 
 <template>
@@ -35,5 +34,10 @@ const choiceLink = computed(
     font-size: 1.2em;
     padding: 19px;
     text-transform: uppercase;
+}
+
+#choice .choice a {
+    text-decoration: none;
+    color: #ff9900;
 }
 </style>

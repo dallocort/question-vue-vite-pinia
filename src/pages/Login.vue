@@ -13,6 +13,7 @@ let password = ref("");
 let buttonDisabled = ref(false);
 
 async function login() {
+    error.value = '';
     try {
         buttonDisabled.value = true;
         const logInResponse = await axios.post('https://dacha-questions.api.deskree.com/api/v1/auth/accounts/sign-in/email', {
@@ -75,6 +76,7 @@ async function login() {
     background: rgba(229, 241, 255, 0.2);
     padding: 1px;
     position: relative;
+    border-radius: 10px;
 }
 
 #login.cursor, #login.cursor button {
@@ -87,6 +89,7 @@ async function login() {
     top: 0;
     padding: 5px;
     text-decoration: none;
+    color: #ff9900;
 }
 
 label {
@@ -109,5 +112,6 @@ h1 {
 
 .error {
     color: #a20505;
+    margin: 0;
 }
 </style>
