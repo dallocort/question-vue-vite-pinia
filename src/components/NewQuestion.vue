@@ -45,7 +45,6 @@ async function addQuestion() {
             if (ans_id === -Infinity) {
                 ans_id = 1;
             }
-            console.log("ANS ID NEXT", ans_id);
             postedQuestion = (await axios.post('https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions', {
                 qst_level: qst_level.value,
                 question: question.value,

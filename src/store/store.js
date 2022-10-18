@@ -28,26 +28,26 @@ export const useStore = defineStore("question", {
       this.idToken = "";
     },
     async deleteQuestion(
-      postedQuestion,
-      postedAnswer1,
-      postedAnswer2,
-      postedAnswer3,
-      postedAnswer4
+      postedQuestionUID,
+      postedAnswer1UID,
+      postedAnswer2UID,
+      postedAnswer3UID,
+      postedAnswer4UID
     ) {
       await axios.delete(
-        `https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions/${postedQuestion}`
+        `https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions/${postedQuestionUID}`
       );
       await axios.delete(
-        `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers/${postedAnswer1}`
+        `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers/${postedAnswer1UID}`
       );
       await axios.delete(
-        `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers/${postedAnswer2}`
+        `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers/${postedAnswer2UID}`
       );
       await axios.delete(
-        `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers/${postedAnswer3}`
+        `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers/${postedAnswer3UID}`
       );
       await axios.delete(
-        `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers/${postedAnswer4}`
+        `https://dacha-questions.api.deskree.com/api/v1/rest/collections/answers/${postedAnswer4UID}`
       );
     },
     async addQuestion(

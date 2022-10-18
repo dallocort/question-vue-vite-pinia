@@ -1,6 +1,6 @@
 <script setup>
 import axios from "axios";
-import {computed, nextTick, onMounted, ref, watch} from "vue";
+import {computed, nextTick, onActivated, ref, watch} from "vue";
 import {useStore} from "../store/store.js";
 import Button from "./Button.vue";
 
@@ -10,6 +10,7 @@ let info = ref('');
 let searchText = ref('');
 let showQuestions = ref(false);
 let buttonRestoreDisabled = ref(false);
+let showBlockade = ref(false);
 
 function createAllQuestions() {
     questions.value = [];
@@ -23,7 +24,6 @@ function createAllQuestions() {
                 el.attributes.uid = el.uid;
                 questions.value.push(el.attributes);
             });
-            console.log(questions);
             showQuestions.value = true;
         }
     }).catch(message => info.value = message);
@@ -31,6 +31,8 @@ function createAllQuestions() {
 
 async function restoreAllQuestions() {
     buttonRestoreDisabled.value = true;
+    showQuestions.value = false;
+    await deleteAllQuestions();
     await store.addQuestion('Inkvizicija je napokon ugasena, koje godine?', '1834', '1795', '1852', '1890', 2);
     await store.addQuestion('Okosnicu inkvizicije činili su oduvek...', 'Dominikanci', 'Masoni', 'Biskupi', 'Templari', 1);
     await store.addQuestion('Inkvizicija (lat. inquisitio) u prevodu znaci:', 'Isledjivanje', 'Proterivanje', 'Širenje',
@@ -75,11 +77,25 @@ async function restoreAllQuestions() {
     buttonRestoreDisabled.value = false;
 }
 
-function deleteQuestion(id, uid) {
-    let decision = confirm('Are you sure you want to delete?');
+async function deleteAllQuestions() {
+    const allQuestionsUID = [];
+    const allQuestionsID = [];
+    const first100Questions = await axios.get(//if no limit, it retrieves only 15 questions
+        "https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions?limit=100");
+    first100Questions.data.data.forEach(el => allQuestionsUID.push(el.uid));
+    first100Questions.data.data.forEach(el => allQuestionsID.push(el.attributes.qst_id));
+    for (let i = 0; i < allQuestionsUID.length; i++) {
+        deleteQuestion(allQuestionsID[i], allQuestionsUID[i], false);
+    }
+}
+
+function deleteQuestion(id, uid, askConfirm = true) {
+    let decision = true;
+    if (askConfirm) {
+        decision = confirm('Are you sure you want to delete?');
+        showBlockade.value = true;
+    }
     if (decision) {
-        console.log(arguments);
-        console.log('filtered', filteredQuestions.value);
         //locate uid for all answers
         let helperResponse;
         const answers = [];
@@ -88,11 +104,17 @@ function deleteQuestion(id, uid) {
         helperResponse.then(res => {
             res.data.data.forEach(el => answers.push(el.uid));
             store.deleteQuestion(uid, answers[0], answers[1], answers[2], answers[3]).then(() => {
-                info.value = 'Question deleted successfully!!';
+                info.value = `Question id[${id}] deleted successfully!!`;
+                console.log(`Question id[${id}] deleted successfully!!`);
                 setTimeout(() => info.value = '', 7000);
-                createAllQuestions();
+                if (askConfirm) {
+                    createAllQuestions();
+                }
+                showBlockade.value = false;
             }).catch(message => info.value = message);
         }).catch(message => info.value = message);
+    } else {
+        showBlockade.value = false;
     }
 }
 
@@ -104,7 +126,14 @@ const filteredQuestions = computed(() => {
         return questions.value;
     }
 });
-onMounted(() => {
+//onMounted run at first mount just like onActivated, resulting question array
+//gets double arguments, because both hooks runs at the same time, and array is
+//getting data from onMounted and from onActivated
+//onMounted(() => {
+//    console.log('on mounted');
+//    createAllQuestions();
+//});
+onActivated(() => {
     createAllQuestions();
 });
 watch(searchText, () => {
@@ -124,7 +153,6 @@ watch(searchText, () => {
                 paragraphs.forEach((p) => {
                     p.innerHTML = p?.textContent?.slice(0, 12) + p?.textContent?.slice(12)
                     ?.replace(re, (match) => `<mark>${match}</mark>`);
-                    console.log(p);
                 });
             }
         }
@@ -134,6 +162,10 @@ watch(searchText, () => {
 
 <template>
     <section v-if="showQuestions && questions.length>=1" id="deleteQuestion">
+        <div v-if="showBlockade" id="blockade">
+            <p>Please wait...</p>
+            <div class="loader"></div>
+        </div>
         <label for="one">SEARCH:</label>
         <input id="one" v-model="searchText" v-focus
                placeholder="search questions"/>
@@ -169,11 +201,11 @@ watch(searchText, () => {
 
 <style scoped>
 #deleteQuestion {
-    /* margin: 10px 0 20px; */
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: space-evenly;
 }
 
 #delete {
@@ -181,7 +213,7 @@ watch(searchText, () => {
     border: none;
     position: absolute;
     top: 87px;
-    left: 210px;
+    left: 231px;
     cursor: pointer;
 }
 
@@ -201,7 +233,7 @@ watch(searchText, () => {
 }
 
 label {
-    width: 71px;
+    width: 35px;
     font-size: 13px;
 }
 
@@ -236,4 +268,43 @@ button {
     border-radius: 5px;
     border-color: transparent;
 }
+
+#blockade {
+    position: absolute;
+    width: 492px;
+    top: 0;
+    height: 588px;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(2px);
+    z-index: 10;
+}
+
+#blockade p {
+    margin-top: 200px;
+    font-size: 22px;
+    color: #594d49;
+}
+
+.loader {
+    border: 10px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 10px solid #3498db;
+    width: 29px;
+    height: 29px;
+    -webkit-animation: spin-327909b2 2s linear infinite;
+    animation: spin-327909b2 2s linear infinite;
+    position: relative;
+    top: 0;
+    left: 45%;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 </style>

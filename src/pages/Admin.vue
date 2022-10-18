@@ -1,7 +1,7 @@
 <script setup>
 import {shallowRef} from "vue";
+import DeleteQuestion from '../components/AllQuestion.vue';
 import Button from "../components/Button.vue";
-import DeleteQuestion from '../components/DeleteQuestion.vue';
 import NewQuestion from '../components/NewQuestion.vue';
 
 const component = shallowRef(NewQuestion);
