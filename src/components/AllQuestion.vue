@@ -3,7 +3,7 @@ import axios from "axios";
 import {computed, nextTick, onActivated, ref, watch} from "vue";
 import {useStore} from "../store/store.js";
 import Button from "./Button.vue";
-
+//todo add notification about restore all button
 const store = useStore();
 let questions = ref([]);
 let info = ref('');
@@ -282,7 +282,7 @@ button {
 #blockade p {
     margin-top: 200px;
     font-size: 22px;
-    color: #594d49;
+    color: #ff9900;
 }
 
 .loader {

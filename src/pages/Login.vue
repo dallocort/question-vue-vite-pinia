@@ -62,7 +62,7 @@ async function login() {
                    name="password"
                    type="password"
                    @keydown.enter="login"/>
-            <Button :disabled="buttonDisabled" btnText="LOG IN" style="scale: 0.7" @click="login"></Button>
+            <Button :disabled="buttonDisabled" btnText="LOG IN" style="scale: 0.7" @click.prevent="login"></Button>
             <p v-if="error" class="error">{{ error }}</p>
             <router-link :to="{name:'main'}">MAIN MENU</router-link>
         </form>
