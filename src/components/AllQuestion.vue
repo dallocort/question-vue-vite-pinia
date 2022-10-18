@@ -291,8 +291,8 @@ button {
     border-top: 10px solid #3498db;
     width: 29px;
     height: 29px;
-    -webkit-animation: spin-327909b2 2s linear infinite;
-    animation: spin-327909b2 2s linear infinite;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
     position: relative;
     top: 0;
     left: 45%;
