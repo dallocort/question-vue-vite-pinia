@@ -10,6 +10,7 @@ let user = sessionStorage.getItem('username');
 let highScores = ref('');
 let error = ref('');
 
+// todo add score
 function exitGame() {
     sessionStorage.clear();
     store.clearStore();
