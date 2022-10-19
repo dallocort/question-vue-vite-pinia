@@ -22,6 +22,7 @@ async function login() {
         });
         store.setIsAuthenticated();
         store.idToken = logInResponse.data.data.idToken;
+        store.user = logInResponse.data.data.email.split('@', 1)[0];
         const getUserInfoResponse = await axios.get(
             `https://dacha-questions.api.deskree.com/api/v1/rest/collections/users/${logInResponse.data.data.uid}`, {
                 headers: {

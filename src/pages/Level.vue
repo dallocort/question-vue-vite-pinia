@@ -18,7 +18,7 @@ let answers = ref([]);
 let restartTimer = ref(false);
 let stopTimer = ref(false);
 let showTimeIsUp = ref(false);
-let user = sessionStorage.getItem('username');
+let user = store.user;
 let score = ref(0);
 let numOfLives = ref(3);
 let showQuestions = ref(true);
@@ -29,8 +29,63 @@ let seconds = ref(20);
 let correctAnswerArray = ref([]);
 let emotion = ref('normal');
 let questionsFetched = ref(false);
+let loadingPHidden = ref(false);
+let numberOfQuestionsIsOk = ref(false);
+let missingQuestionLevel1 = 0;
+let missingQuestionLevel2 = 0;
 
-//todo if less then 5 question lvl 1 app freezes, do info to add more question min 5 lvl 1 and 5 lvl 2
+async function checkAllLevels() {
+    try {
+        const request1 = await axios.get(
+            `https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions?where=[{"attribute":"qst_level","operator":"=","value":1}]`,
+            {
+                headers: {
+                    'Authorization': 'Bearer ' + store.idToken
+                }
+            });
+        if (request1.data?.errors) {
+            throw new Error(request1.data.errors.detail);
+        } else {
+            if (request1.data.data.length < 5) {
+                missingQuestionLevel1 = 5 - request1.data.data.length;
+                console.log('fali 1', missingQuestionLevel1);
+            }
+        }
+        const request2 = await axios.get(
+            `https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions?where=[{"attribute":"qst_level","operator":"=","value":2}]`,
+            {
+                headers: {
+                    'Authorization': 'Bearer ' + store.idToken
+                }
+            });
+        if (request2.data?.errors) {
+            throw new Error(request2.data.errors.detail);
+        } else {
+            if (request2.data.data.length < 5) {
+                missingQuestionLevel2 = 5 - request2.data.data.length;
+                console.log('fali 2', missingQuestionLevel2);
+            }
+        }
+        if (missingQuestionLevel1 > 0 || missingQuestionLevel2 > 0) {
+            console.log('missing', missingQuestionLevel1, missingQuestionLevel2);
+            error.value = `Please add more question/s at ADMIN panel,
+            number of questions Level-1 and Level-2 must be at least 5!
+            Missing number of questions at level 1 is: ${missingQuestionLevel1}, and
+            missing number of questions at level 2 is: ${missingQuestionLevel2}`;
+            loadingPHidden.value = true;
+        } else {
+            numberOfQuestionsIsOk.value = true;
+            console.log('numberOfQuestionsIsOk', numberOfQuestionsIsOk);
+        }
+    } catch (message) {
+        console.log(message);
+        error.value = message;
+    }
+    if (numberOfQuestionsIsOk.value) {
+        createAllQuestions(level.value);
+    }
+}
+
 function createAllQuestions(lvl) {
     const request = axios.get(
         `https://dacha-questions.api.deskree.com/api/v1/rest/collections/questions?where=[{"attribute":"qst_level","operator":"=","value":${lvl}}]`,
@@ -45,7 +100,7 @@ function createAllQuestions(lvl) {
         } else {
             response.data.data.forEach(el => allQuestions.value.push(el.attributes));
         }
-    }).catch(message => error = message);
+    }).catch(message => error.value = message);
 }
 
 function createAnswers() {
@@ -222,7 +277,7 @@ function calculateScore(value) {
 }
 
 onMounted(() => {
-    createAllQuestions(level.value);
+    checkAllLevels();
 });
 watch(allQuestions, () => {
     if (allQuestions.value.length !== 0) {
@@ -278,9 +333,9 @@ watch(level, () => {
                 </li>
             </transition-group>
         </section>
-        <section v-if="!questionsFetched" class="loading">Loading questions...
+        <section v-if="!questionsFetched" :class="['loading',{visible:loadingPHidden}]">Loading questions...
         </section>
-        <p v-if="error">{{ error }}</p>
+        <p v-if="error" class="error">{{ error }}</p>
         <transition name="smiley">
             <Emotions v-if="questionsFetched" :emotion="emotion"/>
         </transition>
@@ -329,6 +384,12 @@ watch(level, () => {
 
 #questions article p:first-of-type {
     font-weight: bold;
+}
+
+.error {
+    color: #bb161c;
+    font-weight: bold;
+    text-align: justify;
 }
 
 .answers {
@@ -436,5 +497,9 @@ h1 {
 .loading {
     margin-top: 25%;
     font-weight: bold;
+}
+
+.visible {
+    visibility: hidden;
 }
 </style>
