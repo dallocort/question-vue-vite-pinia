@@ -3,7 +3,7 @@ import axios from "axios";
 import {computed, nextTick, onActivated, ref, watch} from "vue";
 import {useStore} from "../store/store.js";
 import Button from "./Button.vue";
-//todo add notification about restore all button
+
 const store = useStore();
 let questions = ref([]);
 let info = ref('');
@@ -30,51 +30,56 @@ function createAllQuestions() {
 }
 
 async function restoreAllQuestions() {
-    buttonRestoreDisabled.value = true;
-    showQuestions.value = false;
-    await deleteAllQuestions();
-    await store.addQuestion('Inkvizicija je napokon ugasena, koje godine?', '1834', '1795', '1852', '1890', 2);
-    await store.addQuestion('Okosnicu inkvizicije činili su oduvek...', 'Dominikanci', 'Masoni', 'Biskupi', 'Templari', 1);
-    await store.addQuestion('Inkvizicija (lat. inquisitio) u prevodu znaci:', 'Isledjivanje', 'Proterivanje', 'Širenje',
-        'Proveravanje', 1);
-    await store.addQuestion('Ideju o heliocentričnom sistemu sveta podržavao je u IV veku i jedan car. Koji?', 'Julijan Otpadnik',
-        'Tiberije', 'Marko Aurelije', 'Domicijan', 2);
-    await store.addQuestion('Koje nacionalnosti je bio Nikola Kopernik?', 'Poljak', 'Slovenac', 'Grk', 'Madjar', 1);
-    await store.addQuestion('Početak rada inkvizicije vezuje se za ličnost pape ...', 'Grgura IX', 'Siksta III', 'Jovana I',
-        'Benedikta III', 1);
-    await store.addQuestion('Koliko bajt ima bita?', '8', '6', '4', '2', 1);
-    await store.addQuestion('Koje godine je spaljen Djordano Bruno?', '1600', '1610', '1575', '1590', 2);
-    await store.addQuestion(
-        'Sto godina nakon Galilejeve smrti, telo mu je prebaceno u porodicnu grobnicu, a nesto njegovo je danas izlozeno u muzeju u Firenci. Sta?',
-        'Srednji prst', 'Pramen kose', 'Globus', 'Teleskop', 2);
-    await store.addQuestion('U Galileovu cast, nazvan je i jedan asteroid. Koji?', 'Galileo 697', 'Galileo 987', 'Galileo 178',
-        'Galileo 353', 1);
-    await store.addQuestion(
-        '359 godina nakon procesa protiv Galileja, papa Jovan Pavle II zatražio je oprost i ukinuo presudu inkvizicije protiv Galileja. Kada se to desilo?',
-        '1992', '1878', '1678', '1912', 2);
-    await store.addQuestion('Galileo Galilej je jos jedan Kopernikov sledbenik koga je progonila Rimska inkvizicija. On je ...',
-        'Odustao od tog ucenja', 'Uspeo da pobegne', 'Preminuo u tamnici', 'Spaljen na lomaci', 1);
-    await store.addQuestion('Galileo je pred kraj svog zivota 1638.', 'Potpuno oslepeo', 'Ostao nepokretan', 'Ogluveo',
-        'Izgubio moc govora', 2);
-    await store.addQuestion('Prvi general inkvizicije bio je:', 'Torkemada', 'Riconi', 'Domeniko', 'Alfredo', 2);
-    await store.addQuestion('Model nebeskih sfera (njih 27) prvi je postavio veliki matematicar ...', 'Eudoks', 'Arhimed',
-        'Dekart', 'Aristotel', 2);
-    await store.addQuestion(
-        'U kom veku su crkva i inkvizicija dobile timove savetnika, učenih ljudi, teologa i pravnika, koji su pomagali kardinalima, te raskrinkavali lažne doktrine i čuvali integritet vere',
-        'XVI', 'XIV', 'XIII', 'XV', 1);
-    await store.addQuestion('Posebnu pažnju inkvizicije privukla je južna Francuska sa pokretom jeretika katara odnosno...',
-        'Albižana', 'Judaista', 'Muslimana', 'Jevreja', 2);
-    await store.addQuestion(
-        "'Planete opisuju oko Sunca eliptične putanje. U zajedničkoj žiži tih putanja nalazi se Sunce\' je ...",
-        'Prvi Keplerov zakon', 'Njutnova Geo-teza', 'Galileova Helio-teza', 'Prvi Ptolomejev zakon', 1);
-    await store.addQuestion("Španska inkvizicija zapocela je ...", '1478', '1460', '1382', '1502', 1);
-    await store.addQuestion("Gde se prvenstveno pojavila inkvizicija?", 'u Francuskoj', 'u Spaniji', 'u Italiji', 'u Engleskoj',
-        1);
-    await store.addQuestion("Koliko gigabajt ima megabajta?", '1.000', '100', '10', '10.000', 1);
-    await store.addQuestion("Knjiga Nikole Kopernika „O kretanju nebeskih sfera“ objavljena je 1543. U kom gradu?", 'Nirnbergu',
-        'Atini', 'Parizu', 'Londonu', 1);
-    createAllQuestions();
-    buttonRestoreDisabled.value = false;
+    let decision = confirm(
+        "You are about to recreate all base questions. It will delete all current questions, and create 22 basic ones with 44 answers. It will take about 3min to complete. Are you sure you want to proceed?");
+    if (decision) {
+        buttonRestoreDisabled.value = true;
+        showQuestions.value = false;
+        await deleteAllQuestions();
+        await store.addQuestion('Inkvizicija je napokon ugasena, koje godine?', '1834', '1795', '1852', '1890', 2);
+        await store.addQuestion('Okosnicu inkvizicije činili su oduvek...', 'Dominikanci', 'Masoni', 'Biskupi', 'Templari', 1);
+        await store.addQuestion('Inkvizicija (lat. inquisitio) u prevodu znaci:', 'Isledjivanje', 'Proterivanje', 'Širenje',
+            'Proveravanje', 1);
+        await store.addQuestion('Ideju o heliocentričnom sistemu sveta podržavao je u IV veku i jedan car. Koji?',
+            'Julijan Otpadnik', 'Tiberije', 'Marko Aurelije', 'Domicijan', 2);
+        await store.addQuestion('Koje nacionalnosti je bio Nikola Kopernik?', 'Poljak', 'Slovenac', 'Grk', 'Madjar', 1);
+        await store.addQuestion('Početak rada inkvizicije vezuje se za ličnost pape ...', 'Grgura IX', 'Siksta III', 'Jovana I',
+            'Benedikta III', 1);
+        await store.addQuestion('Koliko bajt ima bita?', '8', '6', '4', '2', 1);
+        await store.addQuestion('Koje godine je spaljen Djordano Bruno?', '1600', '1610', '1575', '1590', 2);
+        await store.addQuestion(
+            'Sto godina nakon Galilejeve smrti, telo mu je prebaceno u porodicnu grobnicu, a nesto njegovo je danas izlozeno u muzeju u Firenci. Sta?',
+            'Srednji prst', 'Pramen kose', 'Globus', 'Teleskop', 2);
+        await store.addQuestion('U Galileovu cast, nazvan je i jedan asteroid. Koji?', 'Galileo 697', 'Galileo 987',
+            'Galileo 178', 'Galileo 353', 1);
+        await store.addQuestion(
+            '359 godina nakon procesa protiv Galileja, papa Jovan Pavle II zatražio je oprost i ukinuo presudu inkvizicije protiv Galileja. Kada se to desilo?',
+            '1992', '1878', '1678', '1912', 2);
+        await store.addQuestion(
+            'Galileo Galilej je jos jedan Kopernikov sledbenik koga je progonila Rimska inkvizicija. On je ...',
+            'Odustao od tog ucenja', 'Uspeo da pobegne', 'Preminuo u tamnici', 'Spaljen na lomaci', 1);
+        await store.addQuestion('Galileo je pred kraj svog zivota 1638.', 'Potpuno oslepeo', 'Ostao nepokretan', 'Ogluveo',
+            'Izgubio moc govora', 2);
+        await store.addQuestion('Prvi general inkvizicije bio je:', 'Torkemada', 'Riconi', 'Domeniko', 'Alfredo', 2);
+        await store.addQuestion('Model nebeskih sfera (njih 27) prvi je postavio veliki matematicar ...', 'Eudoks', 'Arhimed',
+            'Dekart', 'Aristotel', 2);
+        await store.addQuestion(
+            'U kom veku su crkva i inkvizicija dobile timove savetnika, učenih ljudi, teologa i pravnika, koji su pomagali kardinalima, te raskrinkavali lažne doktrine i čuvali integritet vere',
+            'XVI', 'XIV', 'XIII', 'XV', 1);
+        await store.addQuestion('Posebnu pažnju inkvizicije privukla je južna Francuska sa pokretom jeretika katara odnosno...',
+            'Albižana', 'Judaista', 'Muslimana', 'Jevreja', 2);
+        await store.addQuestion(
+            "'Planete opisuju oko Sunca eliptične putanje. U zajedničkoj žiži tih putanja nalazi se Sunce\' je ...",
+            'Prvi Keplerov zakon', 'Njutnova Geo-teza', 'Galileova Helio-teza', 'Prvi Ptolomejev zakon', 1);
+        await store.addQuestion("Španska inkvizicija zapocela je ...", '1478', '1460', '1382', '1502', 1);
+        await store.addQuestion("Gde se prvenstveno pojavila inkvizicija?", 'u Francuskoj', 'u Spaniji', 'u Italiji',
+            'u Engleskoj', 1);
+        await store.addQuestion("Koliko gigabajt ima megabajta?", '1.000', '100', '10', '10.000', 1);
+        await store.addQuestion("Knjiga Nikole Kopernika „O kretanju nebeskih sfera“ objavljena je 1543. U kom gradu?",
+            'Nirnbergu', 'Atini', 'Parizu', 'Londonu', 1);
+        createAllQuestions();
+        buttonRestoreDisabled.value = false;
+    }
 }
 
 async function deleteAllQuestions() {
