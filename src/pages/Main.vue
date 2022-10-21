@@ -67,7 +67,7 @@ onMounted(() => {
 
 <style scoped>
 #main {
-    width: 495px;
+    max-width: 495px;
     height: auto;
     margin: 10vh auto 0;
     color: #d0eac7;
