@@ -72,7 +72,7 @@ async function login() {
 
 <style scoped>
 #login {
-    width: 495px;
+    max-width: 495px;
     margin: 10vh auto 0;
     background: rgba(229, 241, 255, 0.2);
     padding: 1px;

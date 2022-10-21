@@ -22,7 +22,7 @@ const component = shallowRef(NewQuestion);
 
 <style scoped>
 #admin {
-    width: 495px;
+    max-width: 495px;
     margin: 4vh auto 4vh;
     background: rgba(229, 241, 255, 0.2);
     position: relative;

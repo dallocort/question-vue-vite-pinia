@@ -345,7 +345,8 @@ watch(level, () => {
 
 <style scoped>
 #level {
-    width: 495px;
+    max-width: 495px;
+    min-width: 451px;
     margin: 10vh auto 0;
     background: rgba(229, 241, 255, 0.2);
     padding: 1px;
