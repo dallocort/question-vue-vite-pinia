@@ -172,9 +172,12 @@ watch(searchText, () => {
             <div class="loader"></div>
         </div>
         <label for="one">SEARCH:</label>
-        <input id="one" v-model="searchText" v-focus
-               placeholder="search questions"/>
-        <button v-if="searchText" id="delete" @click="searchText=''">❌</button>
+        <div id="x">
+            <input id="one" v-model="searchText" v-focus
+                   placeholder="search questions"/>
+            <button v-if="searchText" id="delete" @click="searchText=''">❌</button>
+        </div>
+
         <button @click="createAllQuestions">REFRESH QUESTIONS</button>
         <article v-if="filteredQuestions.length" id="listOfQuestions">
             <template v-for="(question,index) in filteredQuestions" :key="question.qst_id">
@@ -211,15 +214,20 @@ watch(searchText, () => {
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-evenly;
+    position: relative;
 }
 
 #delete {
     background-color: transparent;
     border: none;
     position: absolute;
-    top: 87px;
-    left: 231px;
+    top: 0;
+    right: -9px;
     cursor: pointer;
+}
+
+#x {
+    position: relative;
 }
 
 .info {
@@ -238,7 +246,6 @@ watch(searchText, () => {
 }
 
 label {
-    width: 35px;
     font-size: 13px;
 }
 

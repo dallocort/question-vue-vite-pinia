@@ -25,7 +25,7 @@ let showQuestions = ref(true);
 let answerWrong = ref('');
 let answerCorrect = ref(1);
 let blocking = ref(false);
-let seconds = ref(20);
+let seconds = ref(200);
 let correctAnswerArray = ref([]);
 let emotion = ref('normal');
 let questionsFetched = ref(false);
@@ -346,7 +346,6 @@ watch(level, () => {
 <style scoped>
 #level {
     max-width: 495px;
-    min-width: 451px;
     margin: 10vh auto 0;
     background: rgba(229, 241, 255, 0.2);
     padding: 1px;
@@ -417,13 +416,14 @@ h1 {
 
 #info {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     align-content: center;
     justify-content: space-around;
     align-items: center;
     font-family: monospace;
     font-size: 1.3em;
     font-weight: bold;
+    column-gap: 8px;
 }
 
 .wrong::after {

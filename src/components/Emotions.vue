@@ -41,8 +41,8 @@ body {
 section {
     box-sizing: border-box;
     position: absolute;
-    left: 350px;
-    top: 300px
+    top: 300px;
+    right: 20px;
 }
 
 p {
